@@ -1,0 +1,18 @@
+Package: ARIbrain
+Version: 0.2
+Date: 2019-06-10
+Title: All-Resolution Inference
+Author: Livio Finos, Jelle Goeman, Wouter Weeda, Jonathan Rosenblatt, Aldo Solari
+Maintainer: Livio Finos <livio.finos@unipd.it>, Wouter Weeda <w.d.weeda@fsw.leidenuniv.nl>
+Description: It performs All-Resolutions Inference (ARI) on functional Magnetic Resonance Image (fMRI) data. As a main feature, 
+ it estimates lower bounds for the proportion of active voxels in a set of clusters as, for example, given by a cluster-wise analysis. 
+ The method is described in Rosenblatt, Finos, Weeda, Solari, Goeman (2018) <doi:10.1016/j.neuroimage.2018.07.060>.
+License: GPL (>= 2)
+RoxygenNote: 6.1.1
+Suggests: knitr, rmarkdown
+Imports: hommel, RNifti, plyr
+VignetteBuilder: knitr
+NeedsCompilation: no
+Packaged: 2018-08-01 11:27:29 UTC; livio
+Repository: CRAN
+Date/Publication: 2018-08-01 12:20:02 UTC
