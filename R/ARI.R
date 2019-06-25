@@ -65,7 +65,7 @@ ARI <- function(Pmap, clusters, mask=NULL, alpha=.05,Statmap=function(ix) -qnorm
     cluster_ids=which(ix,arr.ind = TRUE)
     cluster_ids=cbind(cluster_ids,Stat=StatFun(ix))
     
-    unlist(c(summary_hommel_roi(hommel = hom,ix=ix[mask]),
+    unlist(c(summary_hommel_roi(hommel = hom,ix=ix[mask], alpha = alpha),
       summary_cluster(cluster_ids)[-1])
     )
   })
