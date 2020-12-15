@@ -94,7 +94,7 @@ str(res_ARI)
 
 ```{r}
 library(RNifti)
-
+library(fastcluster)
 
 Tmap = readNifti(system.file("extdata", "zstat.nii.gz", package="ARIbrain"))
 # compute p-values from Test statistic (refering to Normal distribution, right-side alternative)

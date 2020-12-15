@@ -1,6 +1,6 @@
 Package: ARIbrain
-Version: 0.2
-Date: 2019-06-10
+Version: 0.3
+Date: 2020-12-14
 Title: All-Resolution Inference
 Author: Livio Finos, Jelle Goeman, Wouter Weeda, Jonathan Rosenblatt, Aldo Solari
 Maintainer: Livio Finos <livio.finos@unipd.it>, Wouter Weeda <w.d.weeda@fsw.leidenuniv.nl>
@@ -10,9 +10,9 @@ Description: It performs All-Resolutions Inference (ARI) on functional Magnetic 
 License: GPL (>= 2)
 RoxygenNote: 6.1.1
 Suggests: knitr, rmarkdown
-Imports: hommel, RNifti, plyr
+Imports: hommel, RNifti, plyr, fastcluster
 VignetteBuilder: knitr
 NeedsCompilation: no
-Packaged: 2018-08-01 11:27:29 UTC; livio
+Packaged: 2020-12-14 11:27:29 UTC; wouter
 Repository: CRAN
-Date/Publication: 2018-08-01 12:20:02 UTC
+Date/Publication: 2020-12-14 12:20:02 UTC

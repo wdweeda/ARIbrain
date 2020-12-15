@@ -1,2 +1,6 @@
 #ignore
 .DS_Store
+.Rproj.user
+.Rbuildignore
+.Rhistory
+ARIbrain.Rproj
