@@ -12,19 +12,19 @@
 # - attr(*, "pixunits")= chr [1:2] "mm" "s"
 # - attr(*, ".nifti_image_ptr")=<externalptr> 
 
-summary_cluster <- function(coord_and_values,summary_stat=c("max", "center-of-mass")){
+summary_cluster <- function(coord_and_values, summary_stat=c("max", "center-of-mass")) {
   # compute max and/or centre of gravity, see below
-  name_stat=names(coord_and_values)[1]
-  summary_stat=match.arg(summary_stat,c("max", "center-of-mass"))
-  out=list(Size=nrow(coord_and_values))
-  if(summary_stat=="max"){
-    id_max=which.max(coord_and_values[,4])
-    out=c(out,coord_and_values[id_max,])
-  } else if(summary_stat=="center-of-mass"){
-    id_mean=colMeans(coord_and_values[,-1,drop=FALSE])
-    id_closest_to_baricenter=which.min(rowSums(t(t(coord_and_values[,-1,drop=FALSE])-id_mean)^2))
-    out=c(out,coord_and_values[id_closest_to_baricenter,])
-    names(out)[names(out)==name_stat]=summary_stat
+  name_stat = names(coord_and_values)[1]
+  summary_stat = match.arg(summary_stat, c("max", "center-of-mass"))
+  out = list(Size=nrow(coord_and_values))
+  if (summary_stat=="max") {
+    id_max = which.max(coord_and_values[,4])
+    out = c(out, coord_and_values[id_max,])
+  } else if (summary_stat=="center-of-mass") {
+    id_mean = colMeans(coord_and_values[, -1, drop=FALSE])
+    id_closest_to_baricenter = which.min(rowSums(t(t(coord_and_values[, -1, drop=FALSE])-id_mean)^2))
+    out = c(out, coord_and_values[id_closest_to_baricenter,])
+    names(out)[names(out)==name_stat] = summary_stat
   }
   out
-  }
+}
