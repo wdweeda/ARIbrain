@@ -5,8 +5,7 @@
 \alias{ARIbrain-package}
 \title{All-Resolutions Inference}
 \description{
-It performs All-Resolutions Inference on fMRI data. As a main feature, 
-it estimates lower bounds for the proportion of active voxels in a set of clusters as, for example, given by a cluster-wise analysis.
+It performs All-Resolutions Inference (ARI) on fMRI data. As a main feature, it estimates lower bounds for the proportion of active voxels (true discovery proportion, TDP) in a set of clusters as, for example, given by a cluster-wise analysis. Additionally, it can quickly find maximal clusters using ARI under certain TDP thresholds.
 }
 \examples{
 pvalue_name <- system.file("extdata", "pvalue.nii.gz", package="ARIbrain")
