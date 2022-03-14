@@ -1,9 +1,8 @@
-#' @description  It performs All-Resolutions Inference on fMRI data. As a main feature, 
-#' it estimates lower bounds for the proportion of active voxels in a set of clusters as, for example, given by a cluster-wise analysis.
-#' @author all of us
-#' @docType package
 #' @name ARIbrain-package
 #' @title All-Resolutions Inference
+#' @description  It performs All-Resolutions Inference (ARI) on fMRI data. As a main feature, it estimates lower bounds for the proportion of active voxels (true discovery proportion, TDP) in a set of clusters as, for example, given by a cluster-wise analysis. Additionally, it can quickly find maximal clusters using ARI under certain TDP thresholds. 
+#' @author all of us
+#' @docType package
 #' @import hommel
 #' @importFrom stats cutree dist hclust qnorm
 #' @examples 
