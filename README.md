@@ -8,8 +8,8 @@ Using `ARI`, we show how to compute lower bound for proportion of active voxels 
 
 First, we show an analysis where clusters are defined by a supra-threshold-statistic rule. This is the typical case of cluster-wise analysis followed by a multiplicity correction based on Random Field Theory. Here we follow an alternative way: we provide lower bound for proportion for the estimate of active voxels.
 
-## Sintax and parameters
-The sintax of the function is (type `?ARIbrain::ARI` for more details)
+## Syntax and parameters
+The syntax of the function is (type `?ARIbrain::ARI` for more details)
 
 `ARI(Pmap, clusters, mask=NULL, alpha=0.05, Statmap=function(ix) -qnorm(Pmap[ix]), summary_stat=c("max", "center-of-mass"), silent=FALSE)`
 
@@ -23,7 +23,7 @@ Others optional maps (parameters) are:
 - `mask`: the map of logicals (not mandatory, but useful),
 - `Statmap`: the map of statistics (usually z-scores or t-values).
 
-The function accepts input map formats of character file names or 3D arrays. Therefore the minimal sintax is   
+The function accepts input map formats of character file names or 3D arrays. Therefore the minimal syntax is   
 `ARI(Pmap, clusters)`
 
 ## Define clusters
@@ -120,8 +120,8 @@ str(res_ARI)
 
 Here we show an analysis where clusters are defined by a TDP threshold. Using a sufficiently high TDP threshold leads to achieving better spatial localisation. In contrast to classical cluster inference by providing a fixed cluster-forming threshold (CFT), `ARIcluster` uses flexible CFTs, each defind by the TDP threshold, and ensures all derived clusters obtain the TDP meeting or exceeding the pre-specified TDP threshold.
 
-## Sintax and parameters
-The sintax of the function includes two steps:
+## Syntax and parameters
+The syntax of the function includes two steps:
 
 1. Create an ARIcluster object (type `?ARIbrain::ARIcluster` for more details).
 
@@ -152,7 +152,7 @@ The sintax of the function includes two steps:
     - `rest`: summarize information for the rest of the brain,
     - `silent`: not print summary table on screen.
 
-The function accepts input map formats of character file names or 3D arrays. Therefore the minimal sintax is
+The function accepts input map formats of character file names or 3D arrays. Therefore the minimal syntax is
 ```{r, eval=FALSE}
 ariclstr <- ARIcluster(Pmap)
 TDPquery(ariclstr, gamma)
