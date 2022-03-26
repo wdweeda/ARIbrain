@@ -24,6 +24,7 @@ Others optional maps (parameters) are:
 - `Statmap`: the map of statistics (usually z-scores or t-values).
 
 The function accepts input map formats of character file names or 3D arrays. Therefore the minimal sintax is   
+
 `ARI(Pmap, clusters)`
 
 ## Define clusters

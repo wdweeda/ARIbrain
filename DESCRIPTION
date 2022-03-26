@@ -17,17 +17,3 @@ Repository: CRAN
 Date/Publication: 2020-12-14 12:20:02 UTC
 RoxygenNote: 7.1.2.9000
 Encoding: UTF-8
-Collate: 
-    'ARI.R'
-    'ARICluster-class.R'
-    'ARIBrainCluster-class.R'
-    'ARIBrainCluster-function.R'
-    'ARICluster-function.R'
-    'ARIbrain-package.R'
-    'RcppExports.R'
-    'TDPquery-class.R'
-    'TDPquery-function.R'
-    'cluster_threshold.R'
-    'get_summary_cluster.R'
-    'summary_hommel_roi.R'
-    'utils.R'
