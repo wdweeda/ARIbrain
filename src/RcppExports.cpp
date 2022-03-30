@@ -11,7 +11,7 @@ Rcpp::Rostream<false>& Rcpp::Rcerr = Rcpp::Rcpp_cerr_get();
 #endif
 
 // ids2xyz
-Rcpp::NumericMatrix ids2xyz(Rcpp::IntegerVector& IDS, Rcpp::IntegerVector& DIMS);
+Rcpp::IntegerMatrix ids2xyz(Rcpp::IntegerVector& IDS, Rcpp::IntegerVector& DIMS);
 RcppExport SEXP _ARIbrain_ids2xyz(SEXP IDSSEXP, SEXP DIMSSEXP) {
 BEGIN_RCPP
     Rcpp::RObject rcpp_result_gen;
@@ -38,23 +38,22 @@ BEGIN_RCPP
 END_RCPP
 }
 // findClusters
-Rcpp::List findClusters(Rcpp::List& ADJ, Rcpp::IntegerVector& SIZE, Rcpp::IntegerVector& ROOT, int m, int conn);
-RcppExport SEXP _ARIbrain_findClusters(SEXP ADJSEXP, SEXP SIZESEXP, SEXP ROOTSEXP, SEXP mSEXP, SEXP connSEXP) {
+Rcpp::List findClusters(int m, Rcpp::List& ADJ, Rcpp::IntegerVector& ORD, Rcpp::IntegerVector& RANK);
+RcppExport SEXP _ARIbrain_findClusters(SEXP mSEXP, SEXP ADJSEXP, SEXP ORDSEXP, SEXP RANKSEXP) {
 BEGIN_RCPP
     Rcpp::RObject rcpp_result_gen;
     Rcpp::RNGScope rcpp_rngScope_gen;
-    Rcpp::traits::input_parameter< Rcpp::List& >::type ADJ(ADJSEXP);
-    Rcpp::traits::input_parameter< Rcpp::IntegerVector& >::type SIZE(SIZESEXP);
-    Rcpp::traits::input_parameter< Rcpp::IntegerVector& >::type ROOT(ROOTSEXP);
     Rcpp::traits::input_parameter< int >::type m(mSEXP);
-    Rcpp::traits::input_parameter< int >::type conn(connSEXP);
-    rcpp_result_gen = Rcpp::wrap(findClusters(ADJ, SIZE, ROOT, m, conn));
+    Rcpp::traits::input_parameter< Rcpp::List& >::type ADJ(ADJSEXP);
+    Rcpp::traits::input_parameter< Rcpp::IntegerVector& >::type ORD(ORDSEXP);
+    Rcpp::traits::input_parameter< Rcpp::IntegerVector& >::type RANK(RANKSEXP);
+    rcpp_result_gen = Rcpp::wrap(findClusters(m, ADJ, ORD, RANK));
     return rcpp_result_gen;
 END_RCPP
 }
 // forestTDP
-Rcpp::NumericVector forestTDP(int m, int h, double alpha, double simesh, Rcpp::NumericVector& P, Rcpp::IntegerVector& SIZE, Rcpp::IntegerVector& ROOT, Rcpp::List& CHILD);
-RcppExport SEXP _ARIbrain_forestTDP(SEXP mSEXP, SEXP hSEXP, SEXP alphaSEXP, SEXP simeshSEXP, SEXP PSEXP, SEXP SIZESEXP, SEXP ROOTSEXP, SEXP CHILDSEXP) {
+Rcpp::NumericVector forestTDP(int m, int h, double alpha, double simesh, Rcpp::NumericVector& P, Rcpp::IntegerVector& ORD, Rcpp::IntegerVector& SIZE, Rcpp::IntegerVector& ROOT, Rcpp::List& CHILD);
+RcppExport SEXP _ARIbrain_forestTDP(SEXP mSEXP, SEXP hSEXP, SEXP alphaSEXP, SEXP simeshSEXP, SEXP PSEXP, SEXP ORDSEXP, SEXP SIZESEXP, SEXP ROOTSEXP, SEXP CHILDSEXP) {
 BEGIN_RCPP
     Rcpp::RObject rcpp_result_gen;
     Rcpp::RNGScope rcpp_rngScope_gen;
@@ -63,10 +62,11 @@ BEGIN_RCPP
     Rcpp::traits::input_parameter< double >::type alpha(alphaSEXP);
     Rcpp::traits::input_parameter< double >::type simesh(simeshSEXP);
     Rcpp::traits::input_parameter< Rcpp::NumericVector& >::type P(PSEXP);
+    Rcpp::traits::input_parameter< Rcpp::IntegerVector& >::type ORD(ORDSEXP);
     Rcpp::traits::input_parameter< Rcpp::IntegerVector& >::type SIZE(SIZESEXP);
     Rcpp::traits::input_parameter< Rcpp::IntegerVector& >::type ROOT(ROOTSEXP);
     Rcpp::traits::input_parameter< Rcpp::List& >::type CHILD(CHILDSEXP);
-    rcpp_result_gen = Rcpp::wrap(forestTDP(m, h, alpha, simesh, P, SIZE, ROOT, CHILD));
+    rcpp_result_gen = Rcpp::wrap(forestTDP(m, h, alpha, simesh, P, ORD, SIZE, ROOT, CHILD));
     return rcpp_result_gen;
 END_RCPP
 }
@@ -85,19 +85,19 @@ BEGIN_RCPP
 END_RCPP
 }
 // answerQuery
-Rcpp::List answerQuery(int m, double gamma, Rcpp::IntegerVector& ADMSTC, Rcpp::IntegerVector& SIZE, Rcpp::IntegerVector& MARK, Rcpp::NumericVector& TDP, Rcpp::List& CHILD);
-RcppExport SEXP _ARIbrain_answerQuery(SEXP mSEXP, SEXP gammaSEXP, SEXP ADMSTCSEXP, SEXP SIZESEXP, SEXP MARKSEXP, SEXP TDPSEXP, SEXP CHILDSEXP) {
+Rcpp::List answerQuery(double gamma, Rcpp::IntegerVector& ADMSTC, Rcpp::IntegerVector& ORD, Rcpp::IntegerVector& SIZE, Rcpp::IntegerVector& MARK, Rcpp::NumericVector& TDP, Rcpp::List& CHILD);
+RcppExport SEXP _ARIbrain_answerQuery(SEXP gammaSEXP, SEXP ADMSTCSEXP, SEXP ORDSEXP, SEXP SIZESEXP, SEXP MARKSEXP, SEXP TDPSEXP, SEXP CHILDSEXP) {
 BEGIN_RCPP
     Rcpp::RObject rcpp_result_gen;
     Rcpp::RNGScope rcpp_rngScope_gen;
-    Rcpp::traits::input_parameter< int >::type m(mSEXP);
     Rcpp::traits::input_parameter< double >::type gamma(gammaSEXP);
     Rcpp::traits::input_parameter< Rcpp::IntegerVector& >::type ADMSTC(ADMSTCSEXP);
+    Rcpp::traits::input_parameter< Rcpp::IntegerVector& >::type ORD(ORDSEXP);
     Rcpp::traits::input_parameter< Rcpp::IntegerVector& >::type SIZE(SIZESEXP);
     Rcpp::traits::input_parameter< Rcpp::IntegerVector& >::type MARK(MARKSEXP);
     Rcpp::traits::input_parameter< Rcpp::NumericVector& >::type TDP(TDPSEXP);
     Rcpp::traits::input_parameter< Rcpp::List& >::type CHILD(CHILDSEXP);
-    rcpp_result_gen = Rcpp::wrap(answerQuery(m, gamma, ADMSTC, SIZE, MARK, TDP, CHILD));
+    rcpp_result_gen = Rcpp::wrap(answerQuery(gamma, ADMSTC, ORD, SIZE, MARK, TDP, CHILD));
     return rcpp_result_gen;
 END_RCPP
 }
@@ -217,8 +217,8 @@ END_RCPP
 static const R_CallMethodDef CallEntries[] = {
     {"_ARIbrain_ids2xyz", (DL_FUNC) &_ARIbrain_ids2xyz, 2},
     {"_ARIbrain_findAdjList", (DL_FUNC) &_ARIbrain_findAdjList, 5},
-    {"_ARIbrain_findClusters", (DL_FUNC) &_ARIbrain_findClusters, 5},
-    {"_ARIbrain_forestTDP", (DL_FUNC) &_ARIbrain_forestTDP, 8},
+    {"_ARIbrain_findClusters", (DL_FUNC) &_ARIbrain_findClusters, 4},
+    {"_ARIbrain_forestTDP", (DL_FUNC) &_ARIbrain_forestTDP, 9},
     {"_ARIbrain_queryPreparation", (DL_FUNC) &_ARIbrain_queryPreparation, 4},
     {"_ARIbrain_answerQuery", (DL_FUNC) &_ARIbrain_answerQuery, 7},
     {"_ARIbrain_counting_sort", (DL_FUNC) &_ARIbrain_counting_sort, 3},

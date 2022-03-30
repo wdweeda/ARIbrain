@@ -2,21 +2,17 @@
 % Please edit documentation in R/TDPquery-function.R
 \name{TDPquery}
 \alias{TDPquery}
-\title{Answer queries with TDP thresholds.}
+\title{Answer queries with a TDP threshold}
 \usage{
-TDPquery(ARIcluster, gamma, writeNifti = FALSE, rest = FALSE, silent = TRUE)
+TDPquery(ARIBrainCluster, gamma)
 }
 \arguments{
+\item{ARIBrainCluster}{An \code{\link{ARIBrainCluster-class}} object.}
+
 \item{gamma}{A TDP threshold for forming maximal clusters.}
-
-\item{writeNifti}{logical; \code{writeNifti = FALSE} by default. If \code{TRUE}, write cluster image in Nifti format ("ARIcluster.nii.gz").}
-
-\item{rest}{logical; information for the rest of the brain is not shown in the summary table if \code{FALSE} (by default).}
-
-\item{silent}{logical; print summary table on screen if \code{silent = FALSE} by default.}
 }
 \value{
-Returns a \code{matrix} reporting Size, FalseNull, TrueNull, ActiveProp and other summary statistics for each found cluster.
+Returns a \code{\link{TDPquery-class}} object of cluster list.
 }
 \description{
 Given a TDP threshold, it quickly finds all maximal supra-threshold clusters, each with the TDP not smaller than the threshold.
@@ -25,13 +21,16 @@ Given a TDP threshold, it quickly finds all maximal supra-threshold clusters, ea
 pvalue_name <- system.file("extdata", "pvalue.nii.gz", package = "ARIbrain")
 mask_name <- system.file("extdata", "mask.nii.gz", package = "ARIbrain")
 
-# (1) create an ARIcluster object
-ariclstr <- ARIcluster(Pmap = pvalue_name, mask = mask_name)
-show(ariclstr)
+# (1) create an ARIBrainCluster object
+ari <- ARIBrainCluster(Pmap = pvalue_name, mask = mask_name)
 
 # (2) answer queries: find all maximal clusters given a TDP threshold
-res <- TDPquery(ariclstr, gamma = 0.7)
-res
+res <- TDPquery(ari, gamma = 0.7)
+res@clusterlist  # access cluster list (sorting ranks that start from 0)
+
+# (3) summarize cluster information and write image file
+summaryCluster(ari, res, rest = TRUE)
+writeCluster(ari, res, file = "ari.nii.gz", template = mask_name)
     
 }
 \author{

@@ -2,7 +2,7 @@
 using namespace Rcpp;
 #include <vector>
 using std::vector;
-#include "ARIbrain.h"
+#include "ARIBrain.h"
 
 
 // Implementation of Fortune 1989
@@ -374,8 +374,8 @@ int getCategory(double   p,               // p-value for which we need the categ
 // Calculates the lower bound to the number of false hypotheses
 // Implements the algorithm based on the disjoint set structure
 // [[Rcpp::export]]
-Rcpp::IntegerVector findDiscoveries(Rcpp::IntegerVector   &idx,         // indices in set I (not sorted & start from 1)
-                                    Rcpp::NumericVector   &allp,        // all p-values (sorted!)
+Rcpp::IntegerVector findDiscoveries(Rcpp::IntegerVector   &idx,         // indices in set I (starts from 1)
+                                    Rcpp::NumericVector   &allp,        // all p-values
                                     double                simesfactor,  // simesfactor at h(alpha)
                                     int                   h,            // h(alpha)
                                     double                alpha,        // alpha

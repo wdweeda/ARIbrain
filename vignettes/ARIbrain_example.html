@@ -12,7 +12,7 @@
 
 <meta name="author" content="Livio Finos, Jelle Goeman, Wouter Weeda, Jonathan Rosenblatt, Aldo Solari, Xu Chen" />
 
-<meta name="date" content="2022-02-06" />
+<meta name="date" content="2022-03-26" />
 
 <title>Vignette for ARIbrain</title>
 
@@ -140,7 +140,7 @@ code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warni
 
 <h1 class="title toc-ignore">Vignette for ARIbrain</h1>
 <h4 class="author">Livio Finos, Jelle Goeman, Wouter Weeda, Jonathan Rosenblatt, Aldo Solari, Xu Chen</h4>
-<h4 class="date">2022-02-06</h4>
+<h4 class="date">2022-03-26</h4>
 
 
 
@@ -306,8 +306,8 @@ code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warni
 ## cl5       9         0        9 0.00000000   15   36   46 3.762685
 ## cl4       7         0        7 0.00000000   46   53   40 3.504706
 ## cl3       2         0        2 0.00000000   46   44   35 3.330204
-## cl2       1         0        1 0.00000000   19   87   41 3.237725
-## cl1       1         0        1 0.00000000   52   58   46 3.376935
+## cl2       1         0        1 0.00000000   52   58   46 3.376935
+## cl1       1         0        1 0.00000000   19   87   41 3.237725
 ## cl0  133273         0   133273 0.00000000   42   56   43 3.199741</code></pre>
 <div class="sourceCode" id="cb11"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb11-1"><a href="#cb11-1" aria-hidden="true" tabindex="-1"></a><span class="fu">str</span>(res_ARI)</span></code></pre></div>
 <pre><code>##  num [1:19, 1:8] 6907 4607 385 249 168 ...
@@ -318,41 +318,40 @@ code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warni
 </div>
 </div>
 <div id="aricluster-analysis" class="section level1">
-<h1>ARIcluster analysis</h1>
-<p>Here we show an analysis where clusters are defined by a TDP threshold. Using a sufficiently high TDP threshold leads to achieving better spatial localisation. In contrast to classical cluster inference by providing a fixed cluster-forming threshold (CFT), <code>ARIcluster</code> uses flexible CFTs, each defind by the TDP threshold, and ensures all derived clusters obtain the TDP meeting or exceeding the pre-specified TDP threshold.</p>
+<h1>ARICluster analysis</h1>
+<p>Here we show an analysis where clusters are defined by a TDP threshold. Using a sufficiently high TDP threshold leads to achieving better spatial localisation. In contrast to classical cluster inference by providing a fixed cluster-forming threshold (CFT), <code>ARICluster</code> uses flexible CFTs, each defind by the TDP threshold, and ensures all derived clusters obtain the TDP meeting or exceeding the pre-specified TDP threshold.</p>
 <div id="sintax-and-parameters-1" class="section level2">
 <h2>Sintax and parameters</h2>
 <p>The sintax of the function includes two steps:</p>
 <ol style="list-style-type: decimal">
-<li><p>Create an ARIcluster object (type <code>?ARIbrain::ARIcluster</code> for more details).</p>
-<p><code>ARIcluster(Pmap, mask=NULL, conn=18, alpha=0.05)</code></p>
-<p>The main input parameter of <code>ARIcluster()</code> is:</p>
+<li><p>Create an ARIBrainCluster object (type <code>?ARIbrain::ARIBrainCluster</code> for more details).</p>
+<p><code>ARIBrainCluster(Pmap, mask, conn=18, alpha=0.05)</code></p>
+<p>The main input parameter of <code>ARIBrainCluster()</code> is:</p>
 <ul>
 <li><code>Pmap</code>: the map of p-values.</li>
 </ul>
 <p>Others optional maps (parameters) are:</p>
 <ul>
-<li><code>mask</code>: the map of logicals (not mandatory, but useful),</li>
+<li><code>mask</code>: the map of numerics/logicals (not mandatory, but useful),</li>
 <li><code>conn</code>: the connectivity criterion: face (8), edge (18) and vertex (26),</li>
 <li><code>alpha</code>: the significance level.</li>
 </ul></li>
-<li><p>Answer queries given TDP thresholds (type <code>?ARIbrain::TDPquery</code> for more details).</p>
-<p><code>TDPquery(ARIcluster, gamma, writeNifti=FALSE, rest=FALSE, silent=TRUE)</code></p>
-<p>The main input parameters of <code>TDPquery()</code> are:</p>
+<li><p>Answer queries given a TDP threshold (type <code>?ARIbrain::TDPquery</code> for more details).</p>
+<p><code>TDPquery(ARIBrainCluster, gamma)</code></p>
+<p>The input parameters of <code>TDPquery()</code> are:</p>
 <ul>
-<li><code>ARIcluster</code>: the ARIcluster object,</li>
+<li><code>ARIBrainCluster</code>: the ARIBrainCluster object,</li>
 <li><code>gamma</code>: the TDP threshold.</li>
 </ul>
-<p>Others optional maps (parameters) are:</p>
+<p>Others methodss can be used to summarize the resulting cluster information:</p>
 <ul>
-<li><code>writeNifti</code>: write cluster image in Nifti format,</li>
-<li><code>rest</code>: summarize information for the rest of the brain,</li>
-<li><code>silent</code>: not print summary table on screen.</li>
+<li><code>summaryCluster(ARIBrainCluster, TDPquery, rest=FALSE)</code></li>
+<li><code>writeCluster(ARIBrainCluster, TDPquery, file=&quot;aribrain.nii.gz&quot;, template=NULL)</code></li>
 </ul></li>
 </ol>
 <p>The function accepts input map formats of character file names or 3D arrays. Therefore the minimal sintax is</p>
-<div class="sourceCode" id="cb13"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb13-1"><a href="#cb13-1" aria-hidden="true" tabindex="-1"></a>ariclstr <span class="ot">&lt;-</span> <span class="fu">ARIcluster</span>(Pmap)</span>
-<span id="cb13-2"><a href="#cb13-2" aria-hidden="true" tabindex="-1"></a><span class="fu">TDPquery</span>(ariclstr, gamma)</span></code></pre></div>
+<div class="sourceCode" id="cb13"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb13-1"><a href="#cb13-1" aria-hidden="true" tabindex="-1"></a>ari <span class="ot">&lt;-</span> <span class="fu">ARIBrainCluster</span>(Pmap)</span>
+<span id="cb13-2"><a href="#cb13-2" aria-hidden="true" tabindex="-1"></a><span class="fu">TDPquery</span>(ari, gamma)</span></code></pre></div>
 </div>
 <div id="select-proper-tdp-threshold" class="section level2">
 <h2>Select proper TDP threshold</h2>
@@ -367,47 +366,47 @@ code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warni
 <span id="cb14-3"><a href="#cb14-3" aria-hidden="true" tabindex="-1"></a>pvalue_name <span class="ot">&lt;-</span> <span class="fu">system.file</span>(<span class="st">&quot;extdata&quot;</span>, <span class="st">&quot;pvalue.nii.gz&quot;</span>, <span class="at">package=</span><span class="st">&quot;ARIbrain&quot;</span>)</span>
 <span id="cb14-4"><a href="#cb14-4" aria-hidden="true" tabindex="-1"></a>mask_name <span class="ot">&lt;-</span> <span class="fu">system.file</span>(<span class="st">&quot;extdata&quot;</span>, <span class="st">&quot;mask.nii.gz&quot;</span>, <span class="at">package=</span><span class="st">&quot;ARIbrain&quot;</span>)</span>
 <span id="cb14-5"><a href="#cb14-5" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb14-6"><a href="#cb14-6" aria-hidden="true" tabindex="-1"></a><span class="co"># (1) create an ARIcluster object</span></span>
-<span id="cb14-7"><a href="#cb14-7" aria-hidden="true" tabindex="-1"></a>ariclstr <span class="ot">&lt;-</span> <span class="fu">ARIcluster</span>(<span class="at">Pmap =</span> pvalue_name, <span class="at">mask =</span> mask_name)</span></code></pre></div>
-<pre><code>## The 0.95 confidence lower bound for the TDP for all in-mask voxels is 0.07442827</code></pre>
-<div class="sourceCode" id="cb16"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb16-1"><a href="#cb16-1" aria-hidden="true" tabindex="-1"></a><span class="fu">show</span>(ariclstr)</span></code></pre></div>
-<pre><code>## An ARIcluster object for 145872 in-mask voxels.
-## Use TDPquery() to access this object.</code></pre>
-<div class="sourceCode" id="cb18"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb18-1"><a href="#cb18-1" aria-hidden="true" tabindex="-1"></a><span class="co"># (2) answer queries: find all maximal clusters given a TDP threshold</span></span>
-<span id="cb18-2"><a href="#cb18-2" aria-hidden="true" tabindex="-1"></a>res <span class="ot">&lt;-</span> <span class="fu">TDPquery</span>(ariclstr, <span class="at">gamma =</span> <span class="fl">0.7</span>)</span>
-<span id="cb18-3"><a href="#cb18-3" aria-hidden="true" tabindex="-1"></a>res</span></code></pre></div>
-<pre><code>##     Size FalseNull TrueNull ActiveProp dim1 dim2 dim3     Stat
-## cl2 7398      5179     2219  0.7000541   17   57   38 7.824247
-## cl1 4870      3409     1461  0.7000000   76   53   39 7.512624</code></pre>
+<span id="cb14-6"><a href="#cb14-6" aria-hidden="true" tabindex="-1"></a><span class="co"># (1) create an ARIBrainCluster object</span></span>
+<span id="cb14-7"><a href="#cb14-7" aria-hidden="true" tabindex="-1"></a>ari <span class="ot">&lt;-</span> <span class="fu">ARIBrainCluster</span>(<span class="at">Pmap=</span>pvalue_name, <span class="at">mask=</span>mask_name)</span></code></pre></div>
+<pre><code>## The 0.95 confidence lower bound for the TDP concerning all nodes is 0.07442827</code></pre>
+<div class="sourceCode" id="cb16"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb16-1"><a href="#cb16-1" aria-hidden="true" tabindex="-1"></a><span class="co"># (2) answer queries: find all maximal clusters given a TDP threshold</span></span>
+<span id="cb16-2"><a href="#cb16-2" aria-hidden="true" tabindex="-1"></a>res <span class="ot">&lt;-</span> <span class="fu">TDPquery</span>(ari, <span class="at">gamma=</span><span class="fl">0.7</span>)</span>
+<span id="cb16-3"><a href="#cb16-3" aria-hidden="true" tabindex="-1"></a><span class="co"># res@clusterlist   # access cluster list</span></span>
+<span id="cb16-4"><a href="#cb16-4" aria-hidden="true" tabindex="-1"></a><span class="co"># print cluster summary table</span></span>
+<span id="cb16-5"><a href="#cb16-5" aria-hidden="true" tabindex="-1"></a><span class="fu">summaryCluster</span>(ari, res, <span class="at">rest=</span><span class="cn">TRUE</span>)</span></code></pre></div>
+<pre><code>##      Size   FalseNull TrueNull ActiveProp  dim1 dim2 dim3 Stat    
+## cl2  7398   5179      2219     0.7000541   18   57   38   7.824247
+## cl1  4870   3409      1461     0.7         77   53   39   7.512624
+## rest 133604 165       133439   0.001234993 21   65   63   4.882405</code></pre>
+<div class="sourceCode" id="cb18"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb18-1"><a href="#cb18-1" aria-hidden="true" tabindex="-1"></a><span class="co"># write cluster image</span></span>
+<span id="cb18-2"><a href="#cb18-2" aria-hidden="true" tabindex="-1"></a><span class="fu">writeCluster</span>(ari, res, <span class="at">file =</span> <span class="st">&quot;ari.nii.gz&quot;</span>, <span class="at">template=</span>mask_name)</span></code></pre></div>
 </div>
 <div id="array-inputs-1" class="section level3">
 <h3>Array inputs</h3>
-<div class="sourceCode" id="cb20"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb20-1"><a href="#cb20-1" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(RNifti)</span>
-<span id="cb20-2"><a href="#cb20-2" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(ARIbrain)</span>
-<span id="cb20-3"><a href="#cb20-3" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb20-4"><a href="#cb20-4" aria-hidden="true" tabindex="-1"></a>Tmap <span class="ot">&lt;-</span> RNifti<span class="sc">::</span><span class="fu">readNifti</span>(<span class="fu">system.file</span>(<span class="st">&quot;extdata&quot;</span>, <span class="st">&quot;zstat.nii.gz&quot;</span>, <span class="at">package=</span><span class="st">&quot;ARIbrain&quot;</span>))</span>
-<span id="cb20-5"><a href="#cb20-5" aria-hidden="true" tabindex="-1"></a><span class="co"># compute p-values from test statistic (refering to Normal distribution, right-side alternative)</span></span>
-<span id="cb20-6"><a href="#cb20-6" aria-hidden="true" tabindex="-1"></a>Pmap <span class="ot">&lt;-</span> <span class="fu">pnorm</span>(<span class="sc">-</span>Tmap)</span>
-<span id="cb20-7"><a href="#cb20-7" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb20-8"><a href="#cb20-8" aria-hidden="true" tabindex="-1"></a><span class="co"># read the mask file</span></span>
-<span id="cb20-9"><a href="#cb20-9" aria-hidden="true" tabindex="-1"></a>mask <span class="ot">&lt;-</span> RNifti<span class="sc">::</span><span class="fu">readNifti</span>(<span class="fu">system.file</span>(<span class="st">&quot;extdata&quot;</span>, <span class="st">&quot;mask.nii.gz&quot;</span>, <span class="at">package=</span><span class="st">&quot;ARIbrain&quot;</span>))</span>
-<span id="cb20-10"><a href="#cb20-10" aria-hidden="true" tabindex="-1"></a><span class="co"># make sure that mask is a logical map</span></span>
-<span id="cb20-11"><a href="#cb20-11" aria-hidden="true" tabindex="-1"></a>mask <span class="ot">&lt;-</span> mask<span class="sc">!=</span><span class="dv">0</span></span>
-<span id="cb20-12"><a href="#cb20-12" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb20-13"><a href="#cb20-13" aria-hidden="true" tabindex="-1"></a><span class="co"># (1) create an ARIcluster object</span></span>
-<span id="cb20-14"><a href="#cb20-14" aria-hidden="true" tabindex="-1"></a>ariclstr <span class="ot">&lt;-</span> <span class="fu">ARIcluster</span>(Pmap, <span class="at">mask =</span> mask)</span></code></pre></div>
-<pre><code>## Warning in ARIcluster(Pmap, mask = mask): Reference Nifti file name (Pmap) is
-## not provided for writing result cluster image.</code></pre>
-<pre><code>## The 0.95 confidence lower bound for the TDP for all in-mask voxels is 0.07442827</code></pre>
-<div class="sourceCode" id="cb23"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb23-1"><a href="#cb23-1" aria-hidden="true" tabindex="-1"></a><span class="fu">show</span>(ariclstr)</span></code></pre></div>
-<pre><code>## An ARIcluster object for 145872 in-mask voxels.
-## Use TDPquery() to access this object.</code></pre>
-<div class="sourceCode" id="cb25"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb25-1"><a href="#cb25-1" aria-hidden="true" tabindex="-1"></a><span class="co"># (2) answer queries: find all maximal clusters given a TDP threshold</span></span>
-<span id="cb25-2"><a href="#cb25-2" aria-hidden="true" tabindex="-1"></a>res <span class="ot">&lt;-</span> <span class="fu">TDPquery</span>(ariclstr, <span class="at">gamma =</span> <span class="fl">0.7</span>)</span>
-<span id="cb25-3"><a href="#cb25-3" aria-hidden="true" tabindex="-1"></a>res</span></code></pre></div>
-<pre><code>##     Size FalseNull TrueNull ActiveProp dim1 dim2 dim3     Stat
-## cl2 7398      5179     2219  0.7000541   17   57   38 7.826075
-## cl1 4870      3409     1461  0.7000000   76   53   39 7.512461</code></pre>
+<div class="sourceCode" id="cb19"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb19-1"><a href="#cb19-1" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(RNifti)</span>
+<span id="cb19-2"><a href="#cb19-2" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(ARIbrain)</span>
+<span id="cb19-3"><a href="#cb19-3" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb19-4"><a href="#cb19-4" aria-hidden="true" tabindex="-1"></a>Tmap <span class="ot">&lt;-</span> RNifti<span class="sc">::</span><span class="fu">readNifti</span>(<span class="fu">system.file</span>(<span class="st">&quot;extdata&quot;</span>, <span class="st">&quot;zstat.nii.gz&quot;</span>, <span class="at">package=</span><span class="st">&quot;ARIbrain&quot;</span>))</span>
+<span id="cb19-5"><a href="#cb19-5" aria-hidden="true" tabindex="-1"></a><span class="co"># compute p-values from test statistic (refering to Normal distribution, right-side alternative)</span></span>
+<span id="cb19-6"><a href="#cb19-6" aria-hidden="true" tabindex="-1"></a>Pmap <span class="ot">&lt;-</span> <span class="fu">pnorm</span>(<span class="sc">-</span>Tmap)</span>
+<span id="cb19-7"><a href="#cb19-7" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb19-8"><a href="#cb19-8" aria-hidden="true" tabindex="-1"></a><span class="co"># read the mask file</span></span>
+<span id="cb19-9"><a href="#cb19-9" aria-hidden="true" tabindex="-1"></a>mask <span class="ot">&lt;-</span> RNifti<span class="sc">::</span><span class="fu">readNifti</span>(<span class="fu">system.file</span>(<span class="st">&quot;extdata&quot;</span>, <span class="st">&quot;mask.nii.gz&quot;</span>, <span class="at">package=</span><span class="st">&quot;ARIbrain&quot;</span>))</span>
+<span id="cb19-10"><a href="#cb19-10" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb19-11"><a href="#cb19-11" aria-hidden="true" tabindex="-1"></a><span class="co"># (1) create an ARIBrainCluster object</span></span>
+<span id="cb19-12"><a href="#cb19-12" aria-hidden="true" tabindex="-1"></a>ari <span class="ot">&lt;-</span> <span class="fu">ARIBrainCluster</span>(<span class="at">Pmap=</span>pvalue_name, <span class="at">mask=</span>mask_name)</span></code></pre></div>
+<pre><code>## The 0.95 confidence lower bound for the TDP concerning all nodes is 0.07442827</code></pre>
+<div class="sourceCode" id="cb21"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb21-1"><a href="#cb21-1" aria-hidden="true" tabindex="-1"></a><span class="co"># (2) answer queries: find all maximal clusters given a TDP threshold</span></span>
+<span id="cb21-2"><a href="#cb21-2" aria-hidden="true" tabindex="-1"></a>res <span class="ot">&lt;-</span> <span class="fu">TDPquery</span>(ari, <span class="at">gamma=</span><span class="fl">0.7</span>)</span>
+<span id="cb21-3"><a href="#cb21-3" aria-hidden="true" tabindex="-1"></a><span class="co"># res@clusterlist   # access cluster list</span></span>
+<span id="cb21-4"><a href="#cb21-4" aria-hidden="true" tabindex="-1"></a><span class="co"># print cluster summary table</span></span>
+<span id="cb21-5"><a href="#cb21-5" aria-hidden="true" tabindex="-1"></a><span class="fu">summaryCluster</span>(ari, res, <span class="at">rest=</span><span class="cn">TRUE</span>)</span></code></pre></div>
+<pre><code>##      Size   FalseNull TrueNull ActiveProp  dim1 dim2 dim3 Stat    
+## cl2  7398   5179      2219     0.7000541   18   57   38   7.824247
+## cl1  4870   3409      1461     0.7         77   53   39   7.512624
+## rest 133604 165       133439   0.001234993 21   65   63   4.882405</code></pre>
+<div class="sourceCode" id="cb23"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb23-1"><a href="#cb23-1" aria-hidden="true" tabindex="-1"></a><span class="co"># write cluster image</span></span>
+<span id="cb23-2"><a href="#cb23-2" aria-hidden="true" tabindex="-1"></a><span class="fu">writeCluster</span>(ari, res, <span class="at">file =</span> <span class="st">&quot;ari.nii.gz&quot;</span>, <span class="at">template=</span>mask_name)</span></code></pre></div>
 </div>
 </div>
 </div>

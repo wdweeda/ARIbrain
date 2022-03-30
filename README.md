@@ -8,8 +8,8 @@ Using `ARI`, we show how to compute lower bound for proportion of active voxels 
 
 First, we show an analysis where clusters are defined by a supra-threshold-statistic rule. This is the typical case of cluster-wise analysis followed by a multiplicity correction based on Random Field Theory. Here we follow an alternative way: we provide lower bound for proportion for the estimate of active voxels.
 
-## Syntax and parameters
-The syntax of the function is (type `?ARIbrain::ARI` for more details)
+## Sintax and parameters
+The sintax of the function is (type `?ARIbrain::ARI` for more details)
 
 `ARI(Pmap, clusters, mask=NULL, alpha=0.05, Statmap=function(ix) -qnorm(Pmap[ix]), summary_stat=c("max", "center-of-mass"), silent=FALSE)`
 
@@ -23,7 +23,8 @@ Others optional maps (parameters) are:
 - `mask`: the map of logicals (not mandatory, but useful),
 - `Statmap`: the map of statistics (usually z-scores or t-values).
 
-The function accepts input map formats of character file names or 3D arrays. Therefore the minimal syntax is   
+The function accepts input map formats of character file names or 3D arrays. Therefore the minimal sintax is   
+
 `ARI(Pmap, clusters)`
 
 ## Define clusters
@@ -116,46 +117,45 @@ res_ARI <- ARI(Pmap, clusters=clstr, mask=mask, Statmap=Tmap)
 str(res_ARI)
 ```
 
-# ARIcluster analysis
+# ARICluster analysis
 
-Here we show an analysis where clusters are defined by a TDP threshold. Using a sufficiently high TDP threshold leads to achieving better spatial localisation. In contrast to classical cluster inference by providing a fixed cluster-forming threshold (CFT), `ARIcluster` uses flexible CFTs, each defind by the TDP threshold, and ensures all derived clusters obtain the TDP meeting or exceeding the pre-specified TDP threshold.
+Here we show an analysis where clusters are defined by a TDP threshold. Using a sufficiently high TDP threshold leads to achieving better spatial localisation. In contrast to classical cluster inference by providing a fixed cluster-forming threshold (CFT), `ARICluster` uses flexible CFTs, each defind by the TDP threshold, and ensures all derived clusters obtain the TDP meeting or exceeding the pre-specified TDP threshold.
 
-## Syntax and parameters
-The syntax of the function includes two steps:
+## Sintax and parameters
+The sintax of the function includes two steps:
 
-1. Create an ARIcluster object (type `?ARIbrain::ARIcluster` for more details).
+1. Create an ARIBrainCluster object (type `?ARIbrain::ARIBrainCluster` for more details).
 
-    `ARIcluster(Pmap, mask=NULL, conn=18, alpha=0.05)`
+    `ARIBrainCluster(Pmap, mask, conn=18, alpha=0.05)`
 
-    The main input parameter of `ARIcluster()` is:   
+    The main input parameter of `ARIBrainCluster()` is:   
 
     - `Pmap`: the map of p-values.
 
     Others optional maps (parameters) are:   
 
-    - `mask`: the map of logicals (not mandatory, but useful),
+    - `mask`: the map of numerics/logicals (not mandatory, but useful),
     - `conn`: the connectivity criterion: face (8), edge (18) and vertex (26),
     - `alpha`: the significance level.
 
-2. Answer queries given TDP thresholds (type `?ARIbrain::TDPquery` for more details).
+2. Answer queries given a TDP threshold (type `?ARIbrain::TDPquery` for more details).
 
-    `TDPquery(ARIcluster, gamma, writeNifti=FALSE, rest=FALSE, silent=TRUE)`
+    `TDPquery(ARIBrainCluster, gamma)`
 
-    The main input parameters of `TDPquery()` are:   
+    The input parameters of `TDPquery()` are:   
 
-    - `ARIcluster`: the ARIcluster object,
+    - `ARIBrainCluster`: the ARIBrainCluster object,
     - `gamma`: the TDP threshold.
 
-    Others optional maps (parameters) are:   
+    Others methodss can be used to summarize the resulting cluster information:
+    
+    - `summaryCluster(ARIBrainCluster, TDPquery, rest=FALSE)`
+    - `writeCluster(ARIBrainCluster, TDPquery, file="aribrain.nii.gz", template=NULL)`
 
-    - `writeNifti`: write cluster image in Nifti format,
-    - `rest`: summarize information for the rest of the brain,
-    - `silent`: not print summary table on screen.
-
-The function accepts input map formats of character file names or 3D arrays. Therefore the minimal syntax is
+The function accepts input map formats of character file names or 3D arrays. Therefore the minimal sintax is
 ```{r, eval=FALSE}
-ariclstr <- ARIcluster(Pmap)
-TDPquery(ariclstr, gamma)
+ari <- ARIBrainCluster(Pmap)
+TDPquery(ari, gamma)
 ```
 
 ## Select proper TDP threshold
@@ -172,13 +172,16 @@ library(ARIbrain)
 pvalue_name <- system.file("extdata", "pvalue.nii.gz", package="ARIbrain")
 mask_name <- system.file("extdata", "mask.nii.gz", package="ARIbrain")
 
-# (1) create an ARIcluster object
-ariclstr <- ARIcluster(Pmap = pvalue_name, mask = mask_name)
-show(ariclstr)
+# (1) create an ARIBrainCluster object
+ari <- ARIBrainCluster(Pmap=pvalue_name, mask=mask_name)
 
 # (2) answer queries: find all maximal clusters given a TDP threshold
-res <- TDPquery(ariclstr, gamma = 0.7)
-res
+res <- TDPquery(ari, gamma=0.7)
+# res@clusterlist   # access cluster list
+# print cluster summary table
+summaryCluster(ari, res, rest=TRUE)
+# write cluster image
+writeCluster(ari, res, file = "ari.nii.gz", template=mask_name)
 ```
 
 ### Array inputs
@@ -193,14 +196,15 @@ Pmap <- pnorm(-Tmap)
 
 # read the mask file
 mask <- RNifti::readNifti(system.file("extdata", "mask.nii.gz", package="ARIbrain"))
-# make sure that mask is a logical map
-mask <- mask!=0
 
-# (1) create an ARIcluster object
-ariclstr <- ARIcluster(Pmap, mask = mask)
-show(ariclstr)
+# (1) create an ARIBrainCluster object
+ari <- ARIBrainCluster(Pmap=pvalue_name, mask=mask_name)
 
 # (2) answer queries: find all maximal clusters given a TDP threshold
-res <- TDPquery(ariclstr, gamma = 0.7)
-res
+res <- TDPquery(ari, gamma=0.7)
+# res@clusterlist   # access cluster list
+# print cluster summary table
+summaryCluster(ari, res, rest=TRUE)
+# write cluster image
+writeCluster(ari, res, file = "ari.nii.gz", template=mask_name)
 ```
