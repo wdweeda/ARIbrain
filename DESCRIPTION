@@ -1,7 +1,7 @@
 Package: ARIbrain
 Type: Package
 Title: All-Resolutions Inference
-Version: 0.5
+Version: 0.6
 Date: 2022-03-26
 Author: Livio Finos, Jelle Goeman, Wouter Weeda, Jonathan Rosenblatt, Aldo Solari, Xu Chen
 Maintainer: Livio Finos <livio.finos@unipd.it>, Wouter Weeda <w.d.weeda@fsw.leidenuniv.nl>, Xu Chen <X.Chen.MS@lumc.nl>

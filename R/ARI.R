@@ -47,7 +47,7 @@ ARI <- function(Pmap, clusters, mask=NULL, alpha=.05, Statmap=function(ix) -qnor
   # perform hommel
   hom <- hommel::hommel(Pmap[mask])
   if(!silent) {
-    temp = (summary(hom))
+    temp = (summary(hom, alpha = alpha))
     cat("\n")
   }
   
