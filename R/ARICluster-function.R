@@ -23,7 +23,7 @@ ARICluster <- function(p, adj, alpha=0.05) {
 
   # perform hommel to find whole-set TDP bound
   hom <- hommel::hommel(p, simes=TRUE)
-  tdp <- hommel::tdp(hom)
+  tdp <- hommel::tdp(hom, alpha=alpha)
   if (tdp==0) {
     stop("The full-set TDP bound is zero!") 
   } else {
