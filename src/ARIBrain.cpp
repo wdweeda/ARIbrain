@@ -6,16 +6,15 @@
 #include <cmath>
 #include <Rcpp.h>
 using namespace Rcpp;
-#include "ARIbrain.h"
+#include "ARIBrain.h"
+
+//------------------------- (0) PREPARATIONS FOR 3D INPUTS -------------------------//
 
 // Macros:
-// 1) Convert coordinates to index
+// 1) Convert xyz coordinates to index
 #define xyz2index(x, y, z, DIMS) ( (z-1)*DIMS[0]*DIMS[1] + (y-1)*DIMS[0] + (x-1) )
 // 2) Compute size of 3D image
 #define ndims(DIMS) ( DIMS[0]*DIMS[1]*DIMS[2] )
-
-
-//------------------------- (1) FIND ALL STCS -------------------------//
 
 // Convert voxel index to [x y z] coordinates
 std::vector<int> index2xyz(int                  index,
@@ -32,12 +31,12 @@ std::vector<int> index2xyz(int                  index,
     return XYZ;
 }
 
-// Convert multiple voxel indices to an xyz-coordinate matrix
+// Convert several voxel indices to an xyz-coordinate matrix
 // [[Rcpp::export]]
-Rcpp::NumericMatrix ids2xyz(Rcpp::IntegerVector& IDS,
+Rcpp::IntegerMatrix ids2xyz(Rcpp::IntegerVector& IDS,
                             Rcpp::IntegerVector& DIMS)
 {
-    Rcpp::NumericMatrix XYZS(IDS.size(), 3);
+    Rcpp::IntegerMatrix XYZS(IDS.size(), 3);
     for (int i = 0; i < IDS.size(); i++)
     {
         std::vector<int> XYZ = index2xyz(IDS[i], DIMS);
@@ -60,11 +59,11 @@ bool xyz_check(int                  x,
     return (x >= 1 && x <= DIMS[0] && \
             y >= 1 && y <= DIMS[1] && \
             z >= 1 && z <= DIMS[2] && \
-            MASK[index] > 0);
+            MASK[index] != 0);
 }
 
 // Find valid neighbours of a voxel
-std::vector<int> findNeighbours(Rcpp::IntegerVector& MASK,   // 3D mask
+std::vector<int> findNeighbours(Rcpp::IntegerVector& MASK,   // 3D mask of original orders (1:m)
                                 Rcpp::IntegerVector& DIMS,   // image dimensions
                                 int                  index,  // voxel index of interest
                                 int                  conn)   // connectivity criterion
@@ -95,22 +94,24 @@ std::vector<int> findNeighbours(Rcpp::IntegerVector& MASK,   // 3D mask
 
 // Find the adjacency list for all in-mask voxels
 // [[Rcpp::export]]
-Rcpp::List findAdjList(Rcpp::IntegerVector& MASK,    // 3D mask
-                       Rcpp::IntegerVector& INDEXP,  // indices of sorted p-values
+Rcpp::List findAdjList(Rcpp::IntegerVector& MASK,    // 3D mask of original orders (1:m)
+                       Rcpp::IntegerVector& INDEXP,  // voxel indices of unsorted p-values
                        Rcpp::IntegerVector& DIMS,    // image dimensions
                        int                  m,       // number of in-mask voxels
                        int                  conn)    // connectivity criterion
 {
-    std::vector< std::vector<int> > ADJ;
-    ADJ.reserve(m*conn);
+    Rcpp::List ADJ(m);
     for (int i = 0; i < m; i++)
     {
         std::vector<int> IDS = findNeighbours(MASK, DIMS, INDEXP[i], conn);
-        ADJ.push_back(IDS);
+        ADJ[i] = Rcpp::IntegerVector(IDS.begin(), IDS.end());
     }
     
-    return Rcpp::wrap(ADJ);
+    return ADJ;
 }
+
+
+//------------------------- (1) FIND ALL STCS (USING SORTING RANKS) -------------------------//
 
 // Union function of a disjoint-set data structure based on the "union by size" technique.
 // The disjoint sets will represent the components of a forest, and the data structure is
@@ -146,12 +147,23 @@ void UnionBySize(int                  i,
 
 // Compute all supra-threshold clusters (STCs)
 // [[Rcpp::export]]
-Rcpp::List findClusters(Rcpp::List&          ADJ,     // a list of children for all voxels
-                        Rcpp::IntegerVector& SIZE,    // size of subtrees
-                        Rcpp::IntegerVector& ROOT,    // forest roots (>=0 for roots & -1 for not)
-                        int                  m,       // number of in-mask voxels
-                        int                  conn)    // connectivity criterion
+Rcpp::List findClusters(int                  m,     // number of nodes
+                        Rcpp::List&          ADJ,   // a list of neighbours for all nodes (unsorted!)
+                        Rcpp::IntegerVector& ORD,   // sorted orders for non-decreasing p-values
+                        Rcpp::IntegerVector& RANK)  // sorting ranks for all p-values
 {
+    // initialize output (1): a list of children for all nodes
+    Rcpp::List CHILD(m);
+    // initialize output (2): a vector of sizes of subtrees
+    Rcpp::IntegerVector SIZE(m, 1);
+    // initialize output (3): a list of forest roots
+    std::list<int> ROOT;
+    
+    // initialize a child list for a single node
+    std::list<int> CHD;
+    // // using std::forward_list instead of std::list (Note: must include header <forward_list>)
+    // std::forward_list<int> CHD;
+    
     // prepare disjoint set data structure
     std::vector<int> PARENT, FORESTROOT;
     PARENT.reserve(m);
@@ -162,63 +174,58 @@ Rcpp::List findClusters(Rcpp::List&          ADJ,     // a list of children for 
         FORESTROOT.push_back(i);
     }
     
-    // initialize output: a list of children for all voxels
-    std::vector< std::vector<int> > CHILD;
-    CHILD.reserve(m);
-    // initialize child vector for a single voxel
-    std::vector<int> CHD;
-    CHD.reserve(conn);
-    
-    // loop through all voxels
+    // loop through all nodes in the ascending order of p-values
     for (int i = 0; i < m; i++)
     {
-        // get neighbour list of i
-        Rcpp::IntegerVector IDS = ADJ[i];
+        // find neighbours for node with the ith smallest p-value
+        Rcpp::IntegerVector IDS = ADJ[ORD[i]-1];
         
-        // loop through all neighbours of i
+        // loop through all its neighbours
         for (int j = 0; j < IDS.size(); j++)
         {
-            if (IDS[j] < i)  // check if IDS[j] has a smaller rank, i.e., a smaller p-value
+            if (RANK[IDS[j]] < i+1)  // check if the neighbour has a smaller rank
             {
-                int jrep = Find(IDS[j], PARENT);  // representative of the tree containing IDS[j]
-                int    k = FORESTROOT[jrep];      // forest root of the tree containing jrep & IDS[j]
+                int jrep = Find(RANK[IDS[j]]-1, PARENT);  // representative of the tree
+                int    k = FORESTROOT[jrep];              // forest root of the tree
                 
                 if (k != i)
                 {
                     // Merge S_i and S_{jrep}
                     UnionBySize(i, jrep, PARENT, FORESTROOT, SIZE);
                     
-                    // put a heavy child in front
-                    if (CHD.size() == 0 || SIZE[CHD[0]] >= SIZE[k])
+                    // put a heavy child in front (using std::list)
+                    if (CHD.empty() || SIZE[CHD.front()] >= SIZE[k])
                     {
                         CHD.push_back(k);
+                        // CHD.insert_after(CHD.begin(), k);  // for std::forward_list
                     }
                     else
                     {
-                        CHD.push_back(CHD[0]);
-                        CHD[0] = k;
+                        CHD.push_front(k);
+                        // CHD.push_back(CHD[0]);  // for std::vector
+                        // CHD[0] = k;
                     }
                 }
             }
         }
         
         // update child list
-        CHILD.push_back(CHD);
+        CHILD[i] = Rcpp::IntegerVector(CHD.begin(), CHD.end());
         CHD.resize(0);
     }
     
     // find forest roots
-    int j = 0;
     for (int i = 0; i < m; i++)
     {
         if (PARENT[i] == i)
         {
-            ROOT[j] = FORESTROOT[i];
-            j++;
+            ROOT.push_back(FORESTROOT[i]);
         }
     }
-    
-    return Rcpp::wrap(CHILD);
+
+    return Rcpp::List::create(Rcpp::Named("CHILD") = CHILD,
+                              Rcpp::Named("ROOT") = Rcpp::IntegerVector(ROOT.begin(), ROOT.end()),
+                              Rcpp::Named("SIZE") = SIZE);
 }
 
 
@@ -229,9 +236,9 @@ Rcpp::List findClusters(Rcpp::List&          ADJ,     // a list of children for 
 // then all its children in reverse order on the stack. If we pop a value, it means that
 // all its children have been fully explored and added to the descendants, so we append
 // the current value to the descendants too.
-Rcpp::IntegerVector descendants(int                  v,
-                                Rcpp::IntegerVector& SIZE,   // subtree size for all nodes
-                                Rcpp::List&          CHILD)  // a list of children for all voxels
+Rcpp::IntegerVector descendants(int                  v,      // sorting rank (0:m-1)
+                                Rcpp::IntegerVector& SIZE,   // subtree sizes for all nodes
+                                Rcpp::List&          CHILD)  // a list of children for all nodes
 {
     Rcpp::IntegerVector DESC(SIZE[v], 0);
     
@@ -254,8 +261,8 @@ Rcpp::IntegerVector descendants(int                  v,
             DESC[top] = ~v;  // push v as a value
             
             // push all children in reverse order
-            Rcpp::IntegerVector CHD = Rcpp::as<Rcpp::IntegerVector>(CHILD[v]);  // convert the component of Rcpp::List input to its C++ equivalent with Rcpp::as(), which can be achieved through an implicit call to Rcpp::as(), see below.
-            //Rcpp::IntegerVector CHD = CHILD[v];
+            Rcpp::IntegerVector CHD = Rcpp::as<Rcpp::IntegerVector>(CHILD[v]);  // convert the component of Rcpp::List input to its C++ equivalent with Rcpp::as(), which can be achieved through an implicit call to Rcpp::as() using the code below.
+            // Rcpp::IntegerVector CHD = CHILD[v];
             for (int j = CHD.size() - 1; j >= 0; j--)
             {
                 top--;
@@ -268,28 +275,29 @@ Rcpp::IntegerVector descendants(int                  v,
 }
 
 // Compute the TDP bounds of the heavy path starting at v
-void heavyPathTDP(int                  v,       // start of the heavy path
+void heavyPathTDP(int                  v,       // start of the heavy path (0:m-1)
                   int                  par,     // parent of v (-1 indicates no parent)
-                  int                  m,
+                  int                  m,       // number of all nodes
                   int                  h,       // h(alpha)
                   double               alpha,   // alpha
                   double               simesh,  // simesfactor at h(alpha)
-                  Rcpp::NumericVector& P,       // all p-values (sorted!)
-                  Rcpp::IntegerVector& SIZE,    // subtree size for all nodes
+                  Rcpp::NumericVector& P,       // all p-values (unsorted!)
+                  Rcpp::IntegerVector& ORD,     // sorted order for non-decreasing p-values
+                  Rcpp::IntegerVector& SIZE,    // subtree sizes for all nodes
                   Rcpp::List&          CHILD,   // a list of children for all nodes
                   Rcpp::NumericVector& TDP)     // TDP bounds
 {
     Rcpp::IntegerVector HP = descendants(v, SIZE, CHILD);
     for (int i = 0; i < HP.size(); i++)
     {
-        HP[i]++;
+        HP[i] = ORD[HP[i]];  // convert sorting rank to original order
     }
     Rcpp::IntegerVector NUM = findDiscoveries(HP, P, simesh, h, alpha, HP.size(), m);
     
     while (true)  // walk down the heavy path
     {
         // check if v represents an STC
-        if (par == -1 || P[v] != P[par])
+        if (par == -1 || P[ORD[v]-1] != P[ORD[par]-1])
         {
             TDP[v] = ((double) NUM[SIZE[v]]) / ((double) SIZE[v]);
         }
@@ -312,27 +320,29 @@ void heavyPathTDP(int                  v,       // start of the heavy path
 // start of heavy path: 1) root of F;
 //                      2) non-root node that is not the 1st heavy child
 // [[Rcpp::export]]
-Rcpp::NumericVector forestTDP(int                  m,       // number of vertices
+Rcpp::NumericVector forestTDP(int                  m,       // number of all nodes
                               int                  h,       // h(alpha)
                               double               alpha,   // alpha
                               double               simesh,  // simesfactor at h(alpha)
-                              Rcpp::NumericVector& P,       // all p-values (sorted!)
+                              Rcpp::NumericVector& P,       // all p-values (unsorted!)
+                              Rcpp::IntegerVector& ORD,     // sorted order for non-decreasing p-values
                               Rcpp::IntegerVector& SIZE,    // subtree size for all nodes
                               Rcpp::IntegerVector& ROOT,    // all roots of the forest
                               Rcpp::List&          CHILD)   // a child list for all nodes
 {
     Rcpp::NumericVector TDP(m);
+    // loop through all roots
+    for (int i = 0; i < ROOT.size(); i++)
+    {
+        heavyPathTDP(ROOT[i], -1, m, h, alpha, simesh, P, ORD, SIZE, CHILD, TDP);
+    }
+    // loop through all nodes
     for (int i = 0; i < m; i++)
     {
-        if (ROOT[i] >= 0)  // check if ROOT[i] is a root
-        {
-            heavyPathTDP(ROOT[i], -1, m, h, alpha, simesh, P, SIZE, CHILD, TDP);
-        }
-
         Rcpp::IntegerVector CHD = CHILD[i];
         for (int j = 1; j < CHD.size(); j++)
         {
-            heavyPathTDP(CHD[j], i, m, h, alpha, simesh, P, SIZE, CHILD, TDP);
+            heavyPathTDP(CHD[j], i, m, h, alpha, simesh, P, ORD, SIZE, CHILD, TDP);
         }
     }
 
@@ -342,6 +352,14 @@ Rcpp::NumericVector forestTDP(int                  m,       // number of vertice
 
 //------------------------- (3) PREPARE ADMISSIBLE STCS -------------------------//
 
+// construct a comparator for the below sorting step
+struct compareBy
+{
+    Rcpp::NumericVector& value;
+    compareBy(Rcpp::NumericVector& val) : value(val) {}
+    bool operator() (int i, int j) {return value[i] < value[j];}
+};
+
 // Set up ADMSTC: a list of representative of admissible STCs
 // [[Rcpp::export]]
 Rcpp::IntegerVector queryPreparation(int                  m,      // number of vertices
@@ -349,19 +367,19 @@ Rcpp::IntegerVector queryPreparation(int                  m,      // number of v
                                      Rcpp::NumericVector& TDP,    // all TDP bounds
                                      Rcpp::List&          CHILD)  // a children list for all vertices
 {
-    std::vector<int> ADMSTC;  // an index vector of representatives of admissible STCs
+    std::vector<int> ADMSTC;  // a vector of representatives of admissible STCs
     ADMSTC.reserve(m);
     std::vector<double> STACK;
     STACK.reserve(m*2);
     
     // loop through all roots
-    for (int i = 0; ROOT[i] >= 0; i++)
+    for (int i = 0; i < ROOT.size(); i++)
     {
         STACK.push_back(ROOT[i]);  // walk down the forest from ROOT[i]
         STACK.push_back(-1);       // maximum seen TDP on the path to ROOT[i]: non-existent
         while (STACK.size() > 0)
         {
-            double q = STACK.back();         // maximum seen TDP on the path to v
+            double q = STACK.back();  // maximum seen TDP on the path to v
             STACK.pop_back();
             int    v = int(STACK.back());
             STACK.pop_back();
@@ -378,21 +396,13 @@ Rcpp::IntegerVector queryPreparation(int                  m,      // number of v
         }
     }
     
-    // sort L in ascending order of TDP
-    std::vector< std::pair<double,int> > PAIRED;  // (tdp, index)
-    for (int i = 0; i < ADMSTC.size(); i++)
-    {
-        PAIRED.push_back(std::make_pair(TDP[ADMSTC[i]], ADMSTC[i]));
-    }
-    std::sort(PAIRED.begin(), PAIRED.end());
+    // // use a lambda function for the sorting step (To compile, require C++11 and use the command: g++ –std=c++11 ARIBrain.cpp; to construct R package, add the following to the DESCRIPTIONS file to enable C++11: SystemRequirements: C++11)
+    // std::sort(ADMSTC.begin(), ADMSTC.end(), [&TDP](int v, int w) {return TDP[v] < TDP[w];});
     
-    Rcpp::IntegerVector RCPPL(ADMSTC.size());
-    for (int i = 0; i < ADMSTC.size(); i++)
-    {
-        RCPPL[i] = PAIRED[i].second;
-    }
+    // sort ADMSTC in ascending order of TDP using the comparator
+    std::sort(ADMSTC.begin(), ADMSTC.end(), compareBy(TDP));
 
-    return RCPPL;
+    return Rcpp::IntegerVector(ADMSTC.begin(), ADMSTC.end());
 }
 
 
@@ -403,7 +413,7 @@ Rcpp::IntegerVector queryPreparation(int                  m,      // number of v
 // run linear search & binary search in parallel;
 // gamma>=0 is needed because inadmissible STCs have been assigned TDP -1.
 int findLeft(double               gamma,    // a TDP threshold (gamma)
-             Rcpp::IntegerVector& ADMSTC,   // an index list of all admissible vertices (sorted on TDP)
+             Rcpp::IntegerVector& ADMSTC,   // a list of all admissible vertices (sorted on TDP)
              Rcpp::NumericVector& TDP)      // all TDP bounds
 {
     int right = ADMSTC.size();
@@ -421,7 +431,7 @@ int findLeft(double               gamma,    // a TDP threshold (gamma)
             low = mid + 1;
         }
         
-        right--;                     // (2) linear search part
+        right--;                 // (2) linear search part
         // no need to guard against right<0 as right>=0 will always be true
         if (TDP[ADMSTC[right]] < gamma) return (right+1);
     }
@@ -432,9 +442,9 @@ int findLeft(double               gamma,    // a TDP threshold (gamma)
 // Answer the query, i.e., find maximal STCs under the TDP condition.
 // gamma>=0 is needed because inadmissible STCs have been assigned TDP -1.
 // [[Rcpp::export]]
-Rcpp::List answerQuery(int                  m,
-                       double               gamma,
+Rcpp::List answerQuery(double               gamma,
                        Rcpp::IntegerVector& ADMSTC,
+                       Rcpp::IntegerVector& ORD,
                        Rcpp::IntegerVector& SIZE,
                        Rcpp::IntegerVector& MARK,
                        Rcpp::NumericVector& TDP,
@@ -442,34 +452,32 @@ Rcpp::List answerQuery(int                  m,
 {
     if (gamma < 0) gamma = 0;  // constrain TDP threshold gamma to be non-negative
     
-    // initialise a vector of voxel index vectors for all clusters
-    std::vector< std::vector<int> > ANS;
-    ANS.reserve(m);
+    // initialise output: a list of sorting rank vectors for all clusters
+    std::list<Rcpp::IntegerVector> ANS;
     
     int left = findLeft(gamma, ADMSTC, TDP);
     
     for (int i = left; i < ADMSTC.size(); i++)
     {
-        if (MARK[ADMSTC[i]] == 0)
+        if (MARK[ORD[ADMSTC[i]]-1] == 0)
         {
+            // append a cluster to ANS
             Rcpp::IntegerVector DESC = descendants(ADMSTC[i], SIZE, CHILD);
-            std::vector<int> STD_DESC(DESC.begin(), DESC.end());
-            //std::vector<int> STD_DESC = Rcpp::as< std::vector<int> >(DESC);
-            ANS.push_back(STD_DESC);  // append a cluster to ANS
-            
+            ANS.push_back(DESC);
+            // mark the corresponding voxels
             for (int j = 0; j < DESC.size(); j++)
             {
-                MARK[DESC[j]] = 1;
+                MARK[ORD[DESC[j]]-1] = 1;
             }
         }
     }
     
     // clear marks back to 0
-    for (int i = 0; i < ANS.size(); i++)
+    for(std::list<Rcpp::IntegerVector>::iterator it = ANS.begin(); it != ANS.end(); ++it)
     {
-        for (int j = 0; j < ANS[i].size(); j++)
+        for(int j = 0; j < (*it).size(); j++)
         {
-            MARK[ANS[i][j]] = 0;
+            MARK[ORD[(*it)[j]]-1] = 0;
         }
     }
     

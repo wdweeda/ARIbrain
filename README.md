@@ -1,3 +1,6 @@
+# ARIbrain
+All-Resolution Inference (ARI) for brain imaging
+
 # Introduction
 
 `ARIbrain` is the package for All-Resolution Inference (ARI) in neuroscience.
@@ -24,7 +27,6 @@ Others optional maps (parameters) are:
 - `Statmap`: the map of statistics (usually z-scores or t-values).
 
 The function accepts input map formats of character file names or 3D arrays. Therefore the minimal sintax is   
-
 `ARI(Pmap, clusters)`
 
 ## Define clusters
@@ -181,7 +183,7 @@ res <- TDPquery(ari, gamma=0.7)
 # print cluster summary table
 summaryCluster(ari, res, rest=TRUE)
 # write cluster image
-writeCluster(ari, res, file = "ari.nii.gz", template=mask_name)
+writeCluster(ari, res, file="ari.nii.gz", template=mask_name)
 ```
 
 ### Array inputs
@@ -198,7 +200,7 @@ Pmap <- pnorm(-Tmap)
 mask <- RNifti::readNifti(system.file("extdata", "mask.nii.gz", package="ARIbrain"))
 
 # (1) create an ARIBrainCluster object
-ari <- ARIBrainCluster(Pmap=pvalue_name, mask=mask_name)
+ari <- ARIBrainCluster(Pmap, mask=mask)
 
 # (2) answer queries: find all maximal clusters given a TDP threshold
 res <- TDPquery(ari, gamma=0.7)
@@ -206,5 +208,5 @@ res <- TDPquery(ari, gamma=0.7)
 # print cluster summary table
 summaryCluster(ari, res, rest=TRUE)
 # write cluster image
-writeCluster(ari, res, file = "ari.nii.gz", template=mask_name)
+writeCluster(ari, res, file="ari.nii.gz", template=mask)
 ```
