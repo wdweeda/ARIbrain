@@ -1,8 +1,8 @@
 Package: ARIbrain
 Type: Package
 Title: All-Resolutions Inference
-Version: 0.6
-Date: 2022-04-17
+Version: 0.7
+Date: 2022-05-04
 Author: Livio Finos, Jelle Goeman, Wouter Weeda, Jonathan Rosenblatt, Aldo Solari, Xu Chen
 Maintainer: Livio Finos <livio.finos@unipd.it>, Wouter Weeda <w.d.weeda@fsw.leidenuniv.nl>, Xu Chen <X.Chen.MS@lumc.nl>
 Description: It performs All-Resolutions Inference (ARI) on functional Magnetic Resonance Image (fMRI) data. As a main feature, it estimates lower bounds for the proportion of active voxels (true discovery proportion, TDP) in a set of clusters as, for example, given by a cluster-wise analysis. The method is described in Rosenblatt, Finos, Weeda, Solari, Goeman (2018) <doi:10.1016/j.neuroimage.2018.07.060>. Reversely, given a TDP theshold, it can rapidly generate maximal clusters using the adaptive thresholding algorithm.
@@ -10,7 +10,8 @@ License: GPL (>= 2)
 Suggests: knitr, rmarkdown
 Imports: fastcluster, hommel, plyr, Rcpp (>= 1.0.7), RNifti
 VignetteBuilder: knitr
-LinkingTo: Rcpp
+LinkingTo: Rcpp, hommel
+Depends: hommel
 NeedsCompilation: yes
 Packaged: 2020-12-14 11:27:29 UTC; wouter
 Repository: CRAN
@@ -19,14 +20,11 @@ RoxygenNote: 7.1.2.9000
 Encoding: UTF-8
 Collate: 
     'ARI.R'
-    'ARICluster-class.R'
-    'ARIBrainCluster-class.R'
-    'ARIBrainCluster-function.R'
-    'ARICluster-function.R'
+    'ARICluster.R'
+    'ARIBrainCluster.R'
     'ARIbrain-package.R'
     'RcppExports.R'
-    'TDPquery-class.R'
-    'TDPquery-function.R'
+    'TDPClusters.R'
     'cluster_threshold.R'
     'get_summary_cluster.R'
     'summary_hommel_roi.R'

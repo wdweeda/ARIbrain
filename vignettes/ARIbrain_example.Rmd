@@ -149,29 +149,34 @@ The sintax of the function includes two steps:
     - `conn`: the connectivity criterion: face (8), edge (18) and vertex (26),
     - `alpha`: the significance level.
 
-2. Answer queries given a TDP threshold (type `?ARIbrain::TDPquery` for more details).
+2. Answer queries given a TDP threshold, and create a TDPClusters object (type `?ARIbrain::TDPQuery` for more details).
 
-    `TDPquery(ARIBrainCluster, gamma)`
+    `TDPQuery(ARIBrainCluster, threshold)`
 
-    The input parameters of `TDPquery()` are:   
+    The input parameters of `TDPQuery()` are:   
 
     - `ARIBrainCluster`: the ARIBrainCluster object,
-    - `gamma`: the TDP threshold.
+    - `threshold`: the TDP threshold.
 
     Others methodss can be used to summarize the resulting cluster information:
     
-    - `summaryCluster(ARIBrainCluster, TDPquery, rest=FALSE)`
-    - `writeCluster(ARIBrainCluster, TDPquery, file="aribrain.nii.gz", template=NULL)`
+    - `summary(TDPClusters, ..., rest = FALSE)`
+    - `show(TDPClusters)`
+    - `length(TDPClusters)`
+    
+    and output cluster image:
+    
+    - `writeCluster(TDPClusters, file, template, ...)`
 
 The function accepts input map formats of character file names or 3D arrays. Therefore the minimal sintax is
 ```{r, eval=FALSE}
-ari <- ARIBrainCluster(Pmap)
-TDPquery(ari, gamma)
+aricluster <- ARIBrainCluster(Pmap)
+tdpclusters <- TDPQuery(aricluster, threshold)
 ```
 
 ## Select proper TDP threshold
 
-Finding clusters with non-zero TDP threshold `gamma` indicates the presence of some signal in each cluster, however, `gamma` of 40%, 70% and 90% could be characterised as weak, moderate and strong spatial localisation, respectively.
+Finding clusters with non-zero TDP threshold `threshold` indicates the presence of some signal in each cluster, however, `threshold` of 40%, 70% and 90% could be characterised as weak, moderate and strong spatial localisation, respectively.
 
 ## ARIcluster examples
 
@@ -184,15 +189,14 @@ pvalue_name <- system.file("extdata", "pvalue.nii.gz", package="ARIbrain")
 mask_name <- system.file("extdata", "mask.nii.gz", package="ARIbrain")
 
 # (1) create an ARIBrainCluster object
-ari <- ARIBrainCluster(Pmap=pvalue_name, mask=mask_name)
+aricluster <- ARIBrainCluster(Pmap=pvalue_name, mask=mask_name)
 
 # (2) answer queries: find all maximal clusters given a TDP threshold
-res <- TDPquery(ari, gamma=0.7)
-# res@clusterlist   # access cluster list
-# print cluster summary table
-summaryCluster(ari, res, rest=TRUE)
+tdpclusters <- TDPQuery(aricluster, threshold=0.7)
+# print cluster summary table (with information on the rest of the brain)
+summary(tdpclusters, rest=TRUE)
 # write cluster image
-writeCluster(ari, res, file="ari.nii.gz", template=mask_name)
+writeClusters(tdpclusters, file="aribrain.nii.gz", template=mask_name)
 ```
 
 ### Array inputs
@@ -209,15 +213,14 @@ Pmap <- pnorm(-Tmap)
 mask <- RNifti::readNifti(system.file("extdata", "mask.nii.gz", package="ARIbrain"))
 
 # (1) create an ARIBrainCluster object
-ari <- ARIBrainCluster(Pmap, mask=mask)
+aricluster <- ARIBrainCluster(Pmap, mask=mask)
 
 # (2) answer queries: find all maximal clusters given a TDP threshold
-res <- TDPquery(ari, gamma=0.7)
-# res@clusterlist   # access cluster list
-# print cluster summary table
-summaryCluster(ari, res, rest=TRUE)
+tdpclusters <- TDPQuery(aricluster, threshold=0.7)
+# print cluster summary table (without rest)
+summary(tdpclusters)
 # write cluster image
-writeCluster(ari, res, file="ari.nii.gz", template=mask)
+writeClusters(tdpclusters, file="aribrain.nii.gz", template=mask)
 ```
 
 

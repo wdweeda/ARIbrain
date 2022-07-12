@@ -2,7 +2,7 @@
 using namespace Rcpp;
 #include <vector>
 using std::vector;
-#include "ARIBrain.h"
+#include "ARIbrain.h"
 
 
 // Implementation of Fortune 1989

@@ -13,16 +13,16 @@ findClusters <- function(m, ADJ, ORD, RANK) {
     .Call(`_ARIbrain_findClusters`, m, ADJ, ORD, RANK)
 }
 
-forestTDP <- function(m, h, alpha, simesh, P, ORD, SIZE, ROOT, CHILD) {
-    .Call(`_ARIbrain_forestTDP`, m, h, alpha, simesh, P, ORD, SIZE, ROOT, CHILD)
+forestTDP <- function(m, h, alpha, simesh, P, SIZE, ROOT, CHILD) {
+    .Call(`_ARIbrain_forestTDP`, m, h, alpha, simesh, P, SIZE, ROOT, CHILD)
 }
 
 queryPreparation <- function(m, ROOT, TDP, CHILD) {
     .Call(`_ARIbrain_queryPreparation`, m, ROOT, TDP, CHILD)
 }
 
-answerQuery <- function(gamma, ADMSTC, ORD, SIZE, MARK, TDP, CHILD) {
-    .Call(`_ARIbrain_answerQuery`, gamma, ADMSTC, ORD, SIZE, MARK, TDP, CHILD)
+answerQuery <- function(gamma, ADMSTC, SIZE, MARK, TDP, CHILD) {
+    .Call(`_ARIbrain_answerQuery`, gamma, ADMSTC, SIZE, MARK, TDP, CHILD)
 }
 
 counting_sort <- function(n, maxid, CLSTRSIZE) {

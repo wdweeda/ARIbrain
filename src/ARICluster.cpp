@@ -6,109 +6,7 @@
 #include <cmath>
 #include <Rcpp.h>
 using namespace Rcpp;
-#include "ARIBrain.h"
-
-//------------------------- (0) PREPARATIONS FOR 3D INPUTS -------------------------//
-
-// Macros:
-// 1) Convert xyz coordinates to index
-#define xyz2index(x, y, z, DIMS) ( (z-1)*DIMS[0]*DIMS[1] + (y-1)*DIMS[0] + (x-1) )
-// 2) Compute size of 3D image
-#define ndims(DIMS) ( DIMS[0]*DIMS[1]*DIMS[2] )
-
-// Convert voxel index to [x y z] coordinates
-std::vector<int> index2xyz(int                  index,
-                           Rcpp::IntegerVector& DIMS)
-{
-    std::vector<int> XYZ;
-    XYZ.reserve(3);
-    XYZ.push_back( index % DIMS[0] + 1 );
-    //XYZ.push_back( ((index-(XYZ[0]-1))/DIMS[0]) % DIMS[1] + 1 );
-    XYZ.push_back( (index/DIMS[0]) % DIMS[1] + 1 );
-    //XYZ.push_back( (index-(XYZ[0]-1)-(XYZ[1]-1)*DIMS[0]) / (DIMS[0]*DIMS[1]) + 1 );
-    XYZ.push_back( index/(DIMS[0]*DIMS[1]) + 1 );
-    
-    return XYZ;
-}
-
-// Convert several voxel indices to an xyz-coordinate matrix
-// [[Rcpp::export]]
-Rcpp::IntegerMatrix ids2xyz(Rcpp::IntegerVector& IDS,
-                            Rcpp::IntegerVector& DIMS)
-{
-    Rcpp::IntegerMatrix XYZS(IDS.size(), 3);
-    for (int i = 0; i < IDS.size(); i++)
-    {
-        std::vector<int> XYZ = index2xyz(IDS[i], DIMS);
-        XYZS(i,0) = XYZ[0];
-        XYZS(i,1) = XYZ[1];
-        XYZS(i,2) = XYZ[2];
-    }
-    
-    return XYZS;
-}
-
-// Check if a voxel is in the mask
-bool xyz_check(int                  x,
-               int                  y,
-               int                  z,
-               int                  index,
-               Rcpp::IntegerVector& DIMS,
-               Rcpp::IntegerVector& MASK)
-{
-    return (x >= 1 && x <= DIMS[0] && \
-            y >= 1 && y <= DIMS[1] && \
-            z >= 1 && z <= DIMS[2] && \
-            MASK[index] != 0);
-}
-
-// Find valid neighbours of a voxel
-std::vector<int> findNeighbours(Rcpp::IntegerVector& MASK,   // 3D mask of original orders (1:m)
-                                Rcpp::IntegerVector& DIMS,   // image dimensions
-                                int                  index,  // voxel index of interest
-                                int                  conn)   // connectivity criterion
-{
-    // compute [x y z] coordinates based on voxel index
-    std::vector<int> XYZ = index2xyz(index, DIMS);
-    
-    // xyz coordinate adjustment vectors
-    int DX[26] = {1,-1,0, 0,0, 0,  1,-1, 1,-1,1,-1, 1,-1,0, 0, 0, 0,  1,-1, 1,-1, 1,-1, 1,-1};
-    int DY[26] = {0, 0,1,-1,0, 0,  1, 1,-1,-1,0, 0, 0, 0,1,-1, 1,-1,  1, 1,-1,-1, 1, 1,-1,-1};
-    int DZ[26] = {0, 0,0, 0,1,-1,  0, 0, 0, 0,1, 1,-1,-1,1, 1,-1,-1,  1, 1, 1, 1,-1,-1,-1,-1};
-    
-    // find all valid neighbours of a voxel
-    std::vector<int> IDS;
-    IDS.reserve(conn);
-    for (int i = 0; i < conn; i++)
-    {
-        int      id = xyz2index(XYZ[0]+DX[i], XYZ[1]+DY[i], XYZ[2]+DZ[i], DIMS);
-        bool inmask = xyz_check(XYZ[0]+DX[i], XYZ[1]+DY[i], XYZ[2]+DZ[i], id, DIMS, MASK);
-        if (inmask)
-        {
-            IDS.push_back(MASK[id]-1);
-        }
-    }
-    
-    return IDS;
-}
-
-// Find the adjacency list for all in-mask voxels
-// [[Rcpp::export]]
-Rcpp::List findAdjList(Rcpp::IntegerVector& MASK,    // 3D mask of original orders (1:m)
-                       Rcpp::IntegerVector& INDEXP,  // voxel indices of unsorted p-values
-                       Rcpp::IntegerVector& DIMS,    // image dimensions
-                       int                  m,       // number of in-mask voxels
-                       int                  conn)    // connectivity criterion
-{
-    Rcpp::List ADJ(m);
-    for (int i = 0; i < m; i++)
-    {
-        std::vector<int> IDS = findNeighbours(MASK, DIMS, INDEXP[i], conn);
-        ADJ[i] = Rcpp::IntegerVector(IDS.begin(), IDS.end());
-    }
-    
-    return ADJ;
-}
+#include "ARIbrain.h"
 
 
 //------------------------- (1) FIND ALL STCS (USING SORTING RANKS) -------------------------//
@@ -175,42 +73,46 @@ Rcpp::List findClusters(int                  m,     // number of nodes
     }
     
     // loop through all nodes in the ascending order of p-values
+    // // for C++11 and 0-based ORD, the use of v is not needed
+    // for(int i : ORD)
     for (int i = 0; i < m; i++)
     {
+        int v = ORD[i]-1;
+        
         // find neighbours for node with the ith smallest p-value
-        Rcpp::IntegerVector IDS = ADJ[ORD[i]-1];
+        Rcpp::IntegerVector IDS = ADJ[v];
         
         // loop through all its neighbours
         for (int j = 0; j < IDS.size(); j++)
         {
             if (RANK[IDS[j]] < i+1)  // check if the neighbour has a smaller rank
             {
-                int jrep = Find(RANK[IDS[j]]-1, PARENT);  // representative of the tree
-                int    k = FORESTROOT[jrep];              // forest root of the tree
+                int jrep = Find(IDS[j], PARENT);  // representative of the tree
+                int    w = FORESTROOT[jrep];              // forest root of the tree
                 
-                if (k != i)
+                if (v != w)
                 {
-                    // Merge S_i and S_{jrep}
-                    UnionBySize(i, jrep, PARENT, FORESTROOT, SIZE);
+                    // Merge S_v and S_w=S_{jrep}
+                    UnionBySize(v, jrep, PARENT, FORESTROOT, SIZE);
                     
                     // put a heavy child in front (using std::list)
-                    if (CHD.empty() || SIZE[CHD.front()] >= SIZE[k])
+                    if (CHD.empty() || SIZE[CHD.front()] >= SIZE[w])
                     {
-                        CHD.push_back(k);
-                        // CHD.insert_after(CHD.begin(), k);  // for std::forward_list
+                        CHD.push_back(w);
+                        // CHD.insert_after(CHD.begin(), w);  // for std::forward_list
                     }
                     else
                     {
-                        CHD.push_front(k);
+                        CHD.push_front(w);
                         // CHD.push_back(CHD[0]);  // for std::vector
-                        // CHD[0] = k;
+                        // CHD[0] = w;
                     }
                 }
             }
         }
         
         // update child list
-        CHILD[i] = Rcpp::IntegerVector(CHD.begin(), CHD.end());
+        CHILD[v] = Rcpp::IntegerVector(CHD.begin(), CHD.end());
         CHD.resize(0);
     }
     
@@ -236,7 +138,7 @@ Rcpp::List findClusters(int                  m,     // number of nodes
 // then all its children in reverse order on the stack. If we pop a value, it means that
 // all its children have been fully explored and added to the descendants, so we append
 // the current value to the descendants too.
-Rcpp::IntegerVector descendants(int                  v,      // sorting rank (0:m-1)
+Rcpp::IntegerVector descendants(int                  v,      // node v (0:m-1)
                                 Rcpp::IntegerVector& SIZE,   // subtree sizes for all nodes
                                 Rcpp::List&          CHILD)  // a list of children for all nodes
 {
@@ -282,22 +184,22 @@ void heavyPathTDP(int                  v,       // start of the heavy path (0:m-
                   double               alpha,   // alpha
                   double               simesh,  // simesfactor at h(alpha)
                   Rcpp::NumericVector& P,       // all p-values (unsorted!)
-                  Rcpp::IntegerVector& ORD,     // sorted order for non-decreasing p-values
                   Rcpp::IntegerVector& SIZE,    // subtree sizes for all nodes
                   Rcpp::List&          CHILD,   // a list of children for all nodes
                   Rcpp::NumericVector& TDP)     // TDP bounds
 {
-    Rcpp::IntegerVector HP = descendants(v, SIZE, CHILD);
-    for (int i = 0; i < HP.size(); i++)
-    {
-        HP[i] = ORD[HP[i]];  // convert sorting rank to original order
-    }
+    // Rcpp::IntegerVector HP = descendants(v, SIZE, CHILD);
+    // for (int i = 0; i < HP.size(); i++)
+    // {
+    //     HP[i]++;
+    // }
+    Rcpp::IntegerVector HP = descendants(v, SIZE, CHILD) + 1;
     Rcpp::IntegerVector NUM = findDiscoveries(HP, P, simesh, h, alpha, HP.size(), m);
     
     while (true)  // walk down the heavy path
     {
         // check if v represents an STC
-        if (par == -1 || P[ORD[v]-1] != P[ORD[par]-1])
+        if (par == -1 || P[v] != P[par])
         {
             TDP[v] = ((double) NUM[SIZE[v]]) / ((double) SIZE[v]);
         }
@@ -325,16 +227,16 @@ Rcpp::NumericVector forestTDP(int                  m,       // number of all nod
                               double               alpha,   // alpha
                               double               simesh,  // simesfactor at h(alpha)
                               Rcpp::NumericVector& P,       // all p-values (unsorted!)
-                              Rcpp::IntegerVector& ORD,     // sorted order for non-decreasing p-values
                               Rcpp::IntegerVector& SIZE,    // subtree size for all nodes
                               Rcpp::IntegerVector& ROOT,    // all roots of the forest
                               Rcpp::List&          CHILD)   // a child list for all nodes
 {
     Rcpp::NumericVector TDP(m);
+    
     // loop through all roots
     for (int i = 0; i < ROOT.size(); i++)
     {
-        heavyPathTDP(ROOT[i], -1, m, h, alpha, simesh, P, ORD, SIZE, CHILD, TDP);
+        heavyPathTDP(ROOT[i], -1, m, h, alpha, simesh, P, SIZE, CHILD, TDP);
     }
     // loop through all nodes
     for (int i = 0; i < m; i++)
@@ -342,7 +244,7 @@ Rcpp::NumericVector forestTDP(int                  m,       // number of all nod
         Rcpp::IntegerVector CHD = CHILD[i];
         for (int j = 1; j < CHD.size(); j++)
         {
-            heavyPathTDP(CHD[j], i, m, h, alpha, simesh, P, ORD, SIZE, CHILD, TDP);
+            heavyPathTDP(CHD[j], i, m, h, alpha, simesh, P, SIZE, CHILD, TDP);
         }
     }
 
@@ -444,7 +346,6 @@ int findLeft(double               gamma,    // a TDP threshold (gamma)
 // [[Rcpp::export]]
 Rcpp::List answerQuery(double               gamma,
                        Rcpp::IntegerVector& ADMSTC,
-                       Rcpp::IntegerVector& ORD,
                        Rcpp::IntegerVector& SIZE,
                        Rcpp::IntegerVector& MARK,
                        Rcpp::NumericVector& TDP,
@@ -459,7 +360,7 @@ Rcpp::List answerQuery(double               gamma,
     
     for (int i = left; i < ADMSTC.size(); i++)
     {
-        if (MARK[ORD[ADMSTC[i]]-1] == 0)
+        if (MARK[ADMSTC[i]] == 0)
         {
             // append a cluster to ANS
             Rcpp::IntegerVector DESC = descendants(ADMSTC[i], SIZE, CHILD);
@@ -467,7 +368,7 @@ Rcpp::List answerQuery(double               gamma,
             // mark the corresponding voxels
             for (int j = 0; j < DESC.size(); j++)
             {
-                MARK[ORD[DESC[j]]-1] = 1;
+                MARK[DESC[j]] = 1;
             }
         }
     }
@@ -477,7 +378,7 @@ Rcpp::List answerQuery(double               gamma,
     {
         for(int j = 0; j < (*it).size(); j++)
         {
-            MARK[ORD[(*it)[j]]-1] = 0;
+            MARK[(*it)[j]] = 0;
         }
     }
     
