@@ -123,8 +123,8 @@ str(res_ARI)
 
 Here we show an analysis where clusters are defined by a TDP threshold. Using a sufficiently high TDP threshold leads to achieving better spatial localisation. In contrast to classical cluster inference by providing a fixed cluster-forming threshold (CFT), `ARICluster` uses flexible CFTs, each defind by the TDP threshold, and ensures all derived clusters obtain the TDP meeting or exceeding the pre-specified TDP threshold.
 
-## Sintax and parameters
-The sintax of the function includes two steps:
+## Syntax and parameters
+The syntax of the function includes two steps:
 
 1. Create an ARIBrainCluster object (type `?ARIbrain::ARIBrainCluster` for more details).
 
