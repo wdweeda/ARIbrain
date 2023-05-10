@@ -7,12 +7,12 @@
 TDPQuery(aricluster, threshold)
 }
 \arguments{
-\item{aricluster}{An \code{\link{ARIBrainCluster-class}} or \code{\link{ARICluster-class}} object.}
+\item{aricluster}{An \code{\link{ARICluster-class}} or \code{\link{ARIBrainCluster-class}} object.}
 
 \item{threshold}{A TDP threshold for forming maximal clusters.}
 }
 \value{
-Returns a \code{\link{TDPClusters}} object of cluster list.
+Returns a \code{\link{TDPClusters}}or \code{\link{TDPBrainClusters}} object of cluster list.
 }
 \description{
 \code{TDPQuery} is a generic function used to quickly find all maximal supra-threshold clusters given a TDP threshold, where each cluster has the TDP not smaller than the threshold. The function invokes particular methods that depend on the class of the first argument.

@@ -25,6 +25,7 @@ Collate:
     'ARIbrain-package.R'
     'RcppExports.R'
     'TDPClusters.R'
+    'TDPBrainClusters.R'
     'cluster_threshold.R'
     'get_summary_cluster.R'
     'summary_hommel_roi.R'

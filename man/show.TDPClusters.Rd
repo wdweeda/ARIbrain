@@ -7,7 +7,7 @@
 \S4method{show}{TDPClusters}(object)
 }
 \description{
-\code{show} method for class \code{\link{TDPClusters}}.
+\code{show} method for class \code{\link{TDPClusters}} or \code{\link{TDPBrainClusters}}.
 }
 \details{
 The summary table will be printed on console, and information on the rest of the brain will not be shown.
@@ -15,7 +15,7 @@ The summary table will be printed on console, and information on the rest of the
 \section{Slots}{
 
 \describe{
-\item{\code{object}}{Object of class "TDPClusters". Stores the \code{\link{TDPClusters}} object, usually, a result of a call to \code{\link{TDPQuery}}.}
+\item{\code{object}}{Object of class "TDPClusters". Stores the \code{\link{TDPClusters}} or \code{\link{TDPBrainClusters}} object, usually, a result of a call to \code{\link{TDPQuery}}.}
 }}
 
 \examples{

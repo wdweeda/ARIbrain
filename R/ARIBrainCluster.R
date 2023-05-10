@@ -112,42 +112,16 @@ ARIBrainCluster <- function(Pmap, mask, conn=18, alpha=0.05) {
 
 setMethod("TDPQuery", "ARIBrainCluster", function(aricluster, threshold) {
   tdpclusters <- callNextMethod()
-  # # translate node indices in cluster list to 3D voxel indices
-  # if (length(tdpclusters@clusterlist)>0) {
-  #   tdpclusters@clusterlist <- lapply(tdpclusters@clusterlist, 
-  #                                     function(clus) aricluster@indexp[clus+1])
-  # }
-  
   return(tdpclusters)
-})
-
-
-setMethod("summaryClusters", "ARIBrainCluster", function(aricluster, tdpclusters, rest=FALSE) {
-  sumtable <- callNextMethod()
-  # store row & column names
-  names_row <- rownames(sumtable)
-  names_col <- c(colnames(sumtable)[1:5],"X","Y","Z")
-  # find ids of rows without NA values
-  ids_row   <- which(!is.na(sumtable[,4]))
-  # expand sumtable by adding xyz coordinates
-  sumtable  <- cbind(sumtable, matrix(NA,dim(sumtable)[1],2))
-  if (length(ids_row)>0) {
-    sumtable[ids_row, 6:8] <- ids2xyz(as.integer(aricluster@indexp[sumtable[ids_row,6]]-1), aricluster@dims)
-  }
-  # update row & column names
-  rownames(sumtable) <- names_row
-  colnames(sumtable) <- names_col
-  
-  sumtable
 })
 
 
 #' @title Write out cluster image
 #' @name writeClusters
 #' @aliases writeClusters
-#' @description \code{writeClusters} is defined for \code{\link{TDPClusters}} object to write cluster image in Nifti format.
+#' @description \code{writeClusters} is defined for \code{\link{TDPBrainClusters}} object to write cluster image in Nifti format.
 #' @usage writeCluster(tdpclusters, file, template, ...)
-#' @param tdpclusters A \code{\link{TDPClusters}} object, usually, a result of a call to \code{\link{TDPQuery}}.
+#' @param tdpclusters A \code{\link{TDPBrainClusters}} object, usually, a result of a call to \code{\link{TDPQuery}}.
 #' @param file Character; The file name for outputting cluster image, where a file name that ends in .gz will be gzipped.
 #' @param template A template object for writing Nifti image (please refer to \code{template} of \code{\link[RNifti]{writeNifti}} for more details).
 #' @details \code{writeClusters} works similar to \code{\link[RNifti]{writeNifti}}. All its parameters but the first are relayed to \code{\link[RNifti]{writeNifti}}.
