@@ -7,15 +7,15 @@
 \S4method{length}{TDPClusters}(x)
 }
 \description{
-\code{length} method for class \code{\link{TDPClusters}}.
+\code{length} method for class \code{\link{TDPClusters}} or \code{\link{TDPBrainClusters}}.
 }
 \details{
-Some operations on \code{clusterlist} for class \code{\link{TDPClusters}}.
+Some operations on \code{clusterlist} for class \code{\link{TDPClusters}} or \code{\link{TDPBrainClusters}}.
 }
 \section{Slots}{
 
 \describe{
-\item{\code{x}}{Object of class "TDPClusters". Stores the \code{\link{TDPClusters}} object, usually, a result of a call to \code{\link{TDPQuery}}.}
+\item{\code{x}}{Object of class "TDPClusters". Stores the \code{\link{TDPClusters}} or \code{\link{TDPBrainClusters}} object, usually, a result of a call to \code{\link{TDPQuery}}.}
 }}
 
 \examples{

@@ -85,15 +85,15 @@ Rcpp::IntegerVector findNeighbours(Rcpp::IntegerVector& MASK,   // 3D mask of or
         bool inmask = xyz_check(XYZ[0]+DX[i], XYZ[1]+DY[i], XYZ[2]+DZ[i], id, DIMS, MASK);
         if (inmask)
         {
-            IDS[len] = MASK[id]-1;
+            IDS[len] = MASK[id];
             len++;
         }
     }
     
     if (len < conn)
     {
-        //IDS.erase(len+1, conn);
-        IDS.erase(len, conn-1);
+        //IDS.erase(len, conn-1);
+        IDS.erase(len, conn);
     }
     
     return IDS;

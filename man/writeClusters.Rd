@@ -7,14 +7,14 @@
 writeCluster(tdpclusters, file, template, ...)
 }
 \arguments{
-\item{tdpclusters}{A \code{\link{TDPClusters}} object, usually, a result of a call to \code{\link{TDPQuery}}.}
+\item{tdpclusters}{A \code{\link{TDPBrainClusters}} object, usually, a result of a call to \code{\link{TDPQuery}}.}
 
 \item{file}{Character; The file name for outputting cluster image, where a file name that ends in .gz will be gzipped.}
 
 \item{template}{A template object for writing Nifti image (please refer to \code{template} of \code{\link[RNifti]{writeNifti}} for more details).}
 }
 \description{
-\code{writeClusters} is defined for \code{\link{TDPClusters}} object to write cluster image in Nifti format.
+\code{writeClusters} is defined for \code{\link{TDPBrainClusters}} object to write cluster image in Nifti format.
 }
 \details{
 \code{writeClusters} works similar to \code{\link[RNifti]{writeNifti}}. All its parameters but the first are relayed to \code{\link[RNifti]{writeNifti}}.

@@ -47,18 +47,19 @@ ARICluster <- function(p, adj, alpha=0.05) {
   
   # check for p
   if (missing(p)) stop("The p-value vector is not defined.")
+  if (length(p)==0) stop("The p-value vector is empty.")
   if (!is.numeric(p)) stop("The p-value vector should be numeric.")
   if (anyNA(p)) stop("Found missing values in p-value vector. Please remove them!")
   if (min(p)<0 || max(p)>1) stop("P-values must be within [0,1].")
-  # check for adj
-  if (missing(adj)) stop("The adjacency matrix is not defined.")
-  if (!is.list(adj) || !all(sapply(adj, is.integer))) stop("The adjacency matrix should be a list of integer vectors.")
-  if (min(unlist(adj))<0 || max(unlist(adj))>length(adj)-1) stop("The elements of adjacency matrix must be within [1,m].")
-  # check for p & adj
-  if (length(p)!=length(adj)) stop("The length of p & adj does not match!")
-  
   # compute size of the multiple testing problem
   m <- length(p)
+  # check for adj
+  if (missing(adj)) stop("The adjacency list is not defined.")
+  if (length(adj)==0) stop("The adjacency list is empty.")
+  if (!is.list(adj) || !all(sapply(adj, is.integer))) stop("The adjacency list should be a list of integer vectors.")
+  if (!all(Reduce(range, adj, c(1,m))==c(1,m))) stop("The elements of adjacency list must be within [1,m].")
+  # check for p & adj
+  if (length(p)!=length(adj)) stop("The length of p & adj does not match!")
   
   # perform hommel to find whole-set TDP bound
   hom <- hommel::hommel(p, simes=TRUE)
@@ -75,7 +76,6 @@ ARICluster <- function(p, adj, alpha=0.05) {
   #
   # run adaptive thresholding algorithm
   #
-  
   # sort input p-values in ascending order
   ordp  <- order(p)
   ordp  <- as.integer(ordp)   # sorted orders (starts from 1)
@@ -111,7 +111,7 @@ ARICluster <- function(p, adj, alpha=0.05) {
 #' @aliases TDPQuery
 #' @description \code{TDPQuery} is a generic function used to quickly find all maximal supra-threshold clusters given a TDP threshold, where each cluster has the TDP not smaller than the threshold. The function invokes particular methods that depend on the class of the first argument.
 #' @usage TDPQuery(aricluster, threshold)
-#' @param aricluster An \code{\link{ARIBrainCluster-class}} or \code{\link{ARICluster-class}} object.
+#' @param aricluster An \code{\link{ARICluster-class}} or \code{\link{ARIBrainCluster-class}} object.
 #' @param threshold A TDP threshold for forming maximal clusters.
 #' @examples
 #' 
@@ -124,7 +124,7 @@ ARICluster <- function(p, adj, alpha=0.05) {
 #' # (2) answer query: find all maximal clusters given a TDP threshold
 #' tdpclusters <- TDPQuery(aricluster, threshold = 0.7)
 #'     
-#' @return Returns a \code{\link{TDPClusters}} object of cluster list.
+#' @return Returns a \code{\link{TDPClusters}}or \code{\link{TDPBrainClusters}} object of cluster list.
 #' @author Xu Chen, Thijmen Krebs, Wouter Weeda.
 #' @import 
 #' @export
@@ -165,71 +165,4 @@ setMethod("TDPQuery", "ARICluster", function(aricluster, threshold) {
              clusterlist = clusterlist)
   
   return(out)
-})
-
-
-#' @title Generate summary table for found clusters
-#' @description \code{summaryClusters} is a generic function used to create the summary table for all found clusters. The function invokes particular methods that depend on the class of the first argument.
-#' @usage summaryCluster(aricluster, tdpclusters, rest = FALSE)
-#' @param aricluster An \code{\link{ARICluster-class}} or \code{\link{ARIBrainCluster-class}} object.
-#' @param tdpclusters A \code{\link{TDPClusters}} object.
-#' @param rest Logical; if \code{FALSE} (by default), information on the rest of the brain will not be shown in the summary table.
-#' @author Xu Chen, Thijmen Krebs, Wouter Weeda.
-#' @return Returns a summary table reporting Size, TDN (lower bound), #TrueNull (upper bound), TDP (lower bound), maximum statistic and the corresponding ID for each found cluster.
-#' @import plyr
-#' @export
-#' 
-setGeneric("summaryClusters", function(aricluster, tdpclusters, rest=FALSE) standardGeneric("summaryClusters"))
-setMethod("summaryClusters", "ARICluster", function(aricluster, tdpclusters, rest=FALSE) {
-  # compute number of clusters
-  n <- length(tdpclusters@clusterlist)
-  # apply summaries to each cluster
-  if (n>0) {
-    sumtable <- plyr::laply(1:n, function(i) {
-      clus_stat <- -qnorm(aricluster@p[tdpclusters@clusterlist[[i]]+1])
-      id_clus   <- which.max(clus_stat)
-      
-      clus_size <- length(tdpclusters@clusterlist[[i]])
-      clus_tdp  <- aricluster@tdps[tdpclusters@clusterlist[[i]][clus_size]+1]
-      unlist(c(Size=clus_size, 
-               FalseNull=round(clus_size*clus_tdp), 
-               TrueNull=round(clus_size*(1-clus_tdp)), 
-               ActiveProp=clus_tdp,
-               maxZ=clus_stat[id_clus],
-               maxID=tdpclusters@clusterlist[[i]][id_clus]+1))
-    })
-  } else {
-    sumtable <- c(0,0,0,NA,NA,NA)
-    n <- 1
-  }
-  if (is.null(dim(sumtable))) sumtable <- t(as.matrix(sumtable))
-  
-  # modify output summary table by adding the "rest" information
-  if (rest) {
-    ord_rest  <- (1:aricluster@m)[-(unlist(tdpclusters@clusterlist)+1)]
-    rest_size <- length(ord_rest)
-    if (rest_size>0) {
-      rest_stat <- -qnorm(aricluster@p[ord_rest])
-      id_rest   <- which.max(rest_stat)
-      
-      hom       <- hommel::hommel(aricluster@p, simes=TRUE)
-      rest_disc <- hommel::discoveries(hom, ix=ord_rest, alpha=aricluster@alpha, incremental=FALSE)
-      
-      sumtable  <- rbind(sumtable, c(rest_size,
-                                     rest_disc,
-                                     rest_size-rest_disc,
-                                     rest_disc/rest_size,
-                                     rest_stat[id_rest],
-                                     ord_rest[id_rest]))
-    } else {
-      sumtable <- rbind(sumtable, c(0,0,0,NA,NA,NA))
-    }
-    rownames(sumtable) <- c(paste0("cl", n:1), "rest")
-  } else {
-    rownames(sumtable) <- paste0("cl", n:1)
-  }
-  # update column names
-  colnames(sumtable) <- c("Size", "TDN(lower)", "#TrueNull(upper)", "TDP(lower)", "Stat", "ID")
-  
-  sumtable
 })

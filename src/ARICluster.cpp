@@ -85,9 +85,9 @@ Rcpp::List findClusters(int                  m,     // number of nodes
         // loop through all its neighbours
         for (int j = 0; j < IDS.size(); j++)
         {
-            if (RANK[IDS[j]] < i+1)  // check if the neighbour has a smaller rank
+            if (RANK[IDS[j]-1] < i+1)  // check if the neighbour has a smaller rank
             {
-                int jrep = Find(IDS[j], PARENT);  // representative of the tree
+                int jrep = Find(IDS[j]-1, PARENT);  // representative of the tree
                 int    w = FORESTROOT[jrep];              // forest root of the tree
                 
                 if (v != w)
