@@ -16,11 +16,13 @@ Go [here](https://posit.co/download/rstudio-desktop/) to download R and Rstudio 
 ### Step 2, Installing ARIbrain
 You can install the stable version of ARIbrain from [CRAN](https://cran.r-project.org/web/packages/ARIbrain/), or use the *Tools > Install packages* option from Rstudio (select CRAN Repository and search for ARIbrain, leave the install dependencies option checked), or use the `install.packages('ARIbrain')` command in R/Rstudio. The development version of ARIbrain can be downloaded from this GitHub repository using the 'devtools' package. First install this package using `install.packages('devtools')`, and then install ARIbrain using the following command: `devtools::install_github('wdweeda/ARIbrain')`.
 
-# ARI analysis
+# ARI analysis in R
+There are two main flavors of TDP estimation using ARI either providing clusters to the analysis and estimating TDPs for these clusters, or the other way around, setting a minimal TDP level and letting ARI estimate the largest clusters wit at least that TDP level.
 
-First, we show an analysis where clusters are defined by a supra-threshold-statistic rule. This is the typical case of cluster-wise analysis followed by a multiplicity correction based on Random Field Theory. Here we follow an alternative way: we provide lower bound for proportion for the estimate of active voxels.
+## ARI using pre-defined clusters
+ARI can caluculate TDPs for any cluster provided (with full FWER control). These can be clusters defined by, for example, a cluster-forming threshold, or clusters from an anatomical atlas. 
 
-## Syntax and parameters
+### Syntax and parameters
 The syntax of the function is (type `?ARIbrain::ARI` for more details)
 
 `ARI(Pmap, clusters, mask=NULL, alpha=0.05, Statmap=function(ix) -qnorm(Pmap[ix]), summary_stat=c("max", "center-of-mass"), silent=FALSE)`
@@ -35,14 +37,14 @@ Others optional maps (parameters) are:
 - `mask`: the map of logicals (not mandatory, but useful),
 - `Statmap`: the map of statistics (usually z-scores or t-values).
 
-The function accepts input map formats of character file names or 3D arrays. Therefore the minimal sintax is   
+The function accepts input map formats of character file names or 3D arrays. Therefore the minimal syntax is   
 `ARI(Pmap, clusters)`
 
-## Define clusters
+### Define clusters
 
 The clusters can be defined *a priori*, on the basis of previous knowledges or on the basis of anatomical regions. Clusters of such a kind are usually called ROIs. There are no limitations to the number of ROIs that can be evaluated in the same analysis; the lower bounds for each ROI is valid simultaneously for all estimates (i.e. corrected for multiplicity). 
 
-Even more interestingly, the clusters can be defined on the basis of the same data. This is true, since `ARI` allows for circular analysis, still controlling for multiplicity of inferences.
+Even more interestingly, the clusters can be defined on the basis of the same data. This is valid as `ARI` allows for circular analysis, still controlling for multiplicity of inferences.
 
 ### Create `cluster.nii.gz` with FSL
 
