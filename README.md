@@ -46,8 +46,14 @@ Others optional maps (parameters) are:
 The function accepts input map formats of character file names or 3D arrays. Therefore the minimal syntax is   
 `ARI(Pmap, clusters)`
 
+### Define clusters
+
+The clusters can be defined *a priori*, on the basis of previous knowledges or on the basis of anatomical regions. Clusters of such a kind are usually called ROIs. There are no limitations to the number of ROIs that can be evaluated in the same analysis; the lower bounds for each ROI is valid simultaneously for all estimates (i.e. corrected for multiplicity). 
+
+Even more interestingly, the clusters can be defined on the basis of the same data. This is valid as `ARI` allows for circular analysis, still controlling for multiplicity of inferences.
+
 ### Example: 'standard' cluster analysis
-I you have an output z-map (i.e., containing z-statistics) of a contrast/analysis of interest and want to to a 'standard' cluster-extent analysis. We first need to load the statistics file into R and threshold the image at a certain Z value (e.g., 3.1) to form clusters. Make sure your input file is the _unthresholded_ map of statistics. Use the following commands to load the file and threshold the map into clusters.
+If you have an output z-map (i.e., containing z-statistics) of a contrast/analysis of interest and want to to a 'standard' cluster-extent analysis. We first need to load the statistics file into R and threshold the image at a certain Z value (e.g., 3.1) to form clusters. Make sure your input file is the _unthresholded_ map of statistics. Use the following commands to load the file and threshold the map into clusters.
 
 ```
 zdat <- readNifti('zstat1.nii.gz')
@@ -55,13 +61,43 @@ clus31 <- ARIbrain::cluster_threshold(zdat>3.1)
 ```
 The z-statistics data is now loaded into an r-object called `zdat`, the clusters that are formed based on a z-statistics value larger than 3.1 (`zdat>3.1`) which are subsequently stored in the `clus31` object.
 
+Now we need to calculate the p-values (preferably 2-sided) from the z-values. We can do that using the following command:
+```
+pvals2 <- pnorm(abs(zdat), lower.tail = F)*2
+```
+Finally, we can estimate the TDPs for the clusters. Best practive is to also give a brain-mask for the in-brain voxels (else the method will correct over all voxels including the voxels outside the brain).
+```
+ari_out <- ARIbrain::ARI(Pmap = pvals2, clusters = clus31, mask=zdat!=0, Statmap = zdat)
+```
+The `ari_out` output object contains a table with the TDPs for all clusters and include locations for the maximum.
+```
+A hommel object for 199918 hypotheses.
+Simes inequality is assumed.
+Use p.adjust(), discoveries() or localtest() to access this object.
+
+With 0.95 confidence: at least 25616 discoveries.
+1588 hypotheses with adjusted p-values below 0.05.
+
+       Size FalseNull TrueNull ActiveProp dim1 dim2 dim3     Stat
+cl92   4470      2668     1802 0.59686801   24   43   58 6.964157
+cl91   2644      1187     1457 0.44894100   58   64   63 5.973241
+cl90   2226       991     1235 0.44519317   67   33   15 6.258505
+cl89   1903       829     1074 0.43562796   29   35   21 6.346173
+cl88   1019       227      792 0.22276742   23   80   53 5.484357
+cl87    800       324      476 0.40500000   32   68   65 6.333398
+cl86    407        59      348 0.14496314   30   76   38 5.569287
+cl85    337        43      294 0.12759644   62   75   39 5.331001
+cl84    297         0      297 0.00000000   63   92   46 4.748392
+cl83    146         0      146 0.00000000   34   22   27 4.258435
+cl82    128         0      128 0.00000000   51   18   37 4.881685
+cl81     81         0       81 0.00000000   16   50   27 4.635155
+cl80     38         0       38 0.00000000   46   53   42 4.503975
+cl0  185422     11120   174302 0.05997131   48   19   30 4.937728
+```
 
 
-### Define clusters
 
-The clusters can be defined *a priori*, on the basis of previous knowledges or on the basis of anatomical regions. Clusters of such a kind are usually called ROIs. There are no limitations to the number of ROIs that can be evaluated in the same analysis; the lower bounds for each ROI is valid simultaneously for all estimates (i.e. corrected for multiplicity). 
-
-Even more interestingly, the clusters can be defined on the basis of the same data. This is valid as `ARI` allows for circular analysis, still controlling for multiplicity of inferences.
+Additionally, you can also estimate clusters using e.g., FSL.
 
 ### Create `cluster.nii.gz` with FSL
 
