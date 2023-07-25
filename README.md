@@ -69,7 +69,7 @@ Finally, we can estimate the TDPs for the clusters. Best practive is to also giv
 ```
 ari_out <- ARIbrain::ARI(Pmap = pvals2, clusters = clus31, mask=zdat!=0, Statmap = zdat)
 ```
-The `ari_out` output object contains a table with the TDPs for all clusters and include locations for the maximum.
+The `ari_out` output object contains a table with the TDPs (in the ActiveProp column) for all clusters and include locations for the maximum.
 ```
 A hommel object for 199918 hypotheses.
 Simes inequality is assumed.
@@ -94,10 +94,9 @@ cl81     81         0       81 0.00000000   16   50   27 4.635155
 cl80     38         0       38 0.00000000   46   53   42 4.503975
 cl0  185422     11120   174302 0.05997131   48   19   30 4.937728
 ```
+The output also includes `cl0` which is a 'null' cluster containing all in-mask voxels that are not in any other cluster. If this gives a TDP > 0 this means that there is some activitiy somewhere in the brain not captured in the clusters. Usually this number is relatively low (<1%) If this number is really high, you might want to redefine clusters, as you might have missed some area of activation.
 
-
-
-Additionally, you can also estimate clusters using e.g., FSL.
+The following paragraphs contaon additional ways to define clusters.
 
 ### Create `cluster.nii.gz` with FSL
 
