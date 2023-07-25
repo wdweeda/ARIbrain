@@ -25,8 +25,11 @@ After installing, open RStudio (if not already open), and load the ARIbrain pack
 # ARI analysis in R
 There are two main flavors of TDP estimation using ARI either providing clusters to the analysis and estimating TDPs for these clusters, or the other way around, setting a minimal TDP level and letting ARI estimate the largest clusters wit at least that TDP level.
 
-## main ARI syntax 
-The main function `ARI` has the following syntax (type `?ARIbrain::ARI` for more details)
+## ARI using pre-defined clusters
+ARI can caluculate TDPs for any cluster provided (with full FWER control). These can be clusters defined by, for example, a cluster-forming threshold, or clusters from an anatomical atlas. The basic input for ARI is a map of (2-sided) p-values and a map of cluster indices (0's for non-clusters and integer values for each voxel that belong to a specific clusters, e.g. 1's for cluster 1, 2's for cluster 2, etc.)
+
+### Main ARI syntax 
+If you are familiar with neuroimaging analysis is R here is the main syntax for the R function `ARI` (type `?ARIbrain::ARI` for more details). Below the syntax we will continue with an example of a 'standard' analysis.
 
 `ARI(Pmap, clusters, mask=NULL, alpha=0.05, Statmap=function(ix) -qnorm(Pmap[ix]), summary_stat=c("max", "center-of-mass"), silent=FALSE)`
 
@@ -43,9 +46,6 @@ Others optional maps (parameters) are:
 The function accepts input map formats of character file names or 3D arrays. Therefore the minimal syntax is   
 `ARI(Pmap, clusters)`
 
-## ARI using pre-defined clusters
-ARI can caluculate TDPs for any cluster provided (with full FWER control). These can be clusters defined by, for example, a cluster-forming threshold, or clusters from an anatomical atlas. The basic input for ARI is a map of (2-sided) p-values and a map of cluster indices (0's for non-clusters and integer values for each voxel that belong to a specific clusters, e.g. 1's for cluster 1, 2's for cluster 2, etc.)
-
 ### Example: 'standard' cluster analysis
 I you have an output z-map (i.e., containing z-statistics) of a contrast/analysis of interest and want to to a 'standard' cluster-extent analysis. We first need to load the statistics file into R and threshold the image at a certain Z value (e.g., 3.1) to form clusters. Make sure your input file is the _unthresholded_ map of statistics. Use the following commands to load the file and threshold the map into clusters.
 
@@ -53,6 +53,9 @@ I you have an output z-map (i.e., containing z-statistics) of a contrast/analysi
 zdat <- readNifti('zstat1.nii.gz')
 clus31 <- ARIbrain::cluster_threshold(zdat>3.1)
 ```
+The z-statistics data is now loaded into an r-object called `zdat`, the clusters that are formed based on a z-statistics value larger than 3.1 (`zdat>3.1`) which are subsequently stored in the `clus31` object.
+
+
 
 ### Define clusters
 
