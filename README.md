@@ -8,6 +8,9 @@ ARIbrain can be used in two different 'modes'. Using `ARI`, we show how to compu
 
 ARIbrain requires R to run and the 'ARIbrain'-package to be installed. For non R-users the easiest way to install R is in combination with Rstudio. You can find the instructions how to install R and RStudio.
 
+## References
+The original paper introducing ARI can be found here: (https://doi.org/10.1016/j.neuroimage.2018.07.060).
+
 ## Installing the 'ARIbrain' package
 
 ### Step 1, Installing R and Rstudio.
@@ -16,6 +19,9 @@ Go [here](https://posit.co/download/rstudio-desktop/) to download R and Rstudio 
 ### Step 2, Installing ARIbrain
 You can install the stable version of ARIbrain from [CRAN](https://cran.r-project.org/web/packages/ARIbrain/), or use the *Tools > Install packages* option from Rstudio (select CRAN Repository and search for ARIbrain, leave the install dependencies option checked), or use the `install.packages('ARIbrain')` command in R/Rstudio. The development version of ARIbrain can be downloaded from this GitHub repository using the 'devtools' package. First install this package using `install.packages('devtools')`, and then install ARIbrain using the following command: `devtools::install_github('wdweeda/ARIbrain')`.
 
+### Step 3, Running ARI in RStudio
+After installing, open RStudio (if not already open), and load the ARIbrain package by typing `library(ARIbrain)`. This will load the package for usage. For easy access to the files it is convenient to change to the working directory of where your statistics maps (in Nifti format) of interest are located by typing `setwd('workdirpath')` where `workdirpath` is the path to your working directory (e.g. `/Users/wouter/fmri` or `c:/Users/wouter/fmridir`)
+
 # ARI analysis in R
 There are two main flavors of TDP estimation using ARI either providing clusters to the analysis and estimating TDPs for these clusters, or the other way around, setting a minimal TDP level and letting ARI estimate the largest clusters wit at least that TDP level.
 
@@ -23,7 +29,7 @@ There are two main flavors of TDP estimation using ARI either providing clusters
 ARI can caluculate TDPs for any cluster provided (with full FWER control). These can be clusters defined by, for example, a cluster-forming threshold, or clusters from an anatomical atlas. 
 
 ### Syntax and parameters
-The syntax of the function is (type `?ARIbrain::ARI` for more details)
+The main function `ARI` has the following syntax (type `?ARIbrain::ARI` for more details)
 
 `ARI(Pmap, clusters, mask=NULL, alpha=0.05, Statmap=function(ix) -qnorm(Pmap[ix]), summary_stat=c("max", "center-of-mass"), silent=FALSE)`
 
