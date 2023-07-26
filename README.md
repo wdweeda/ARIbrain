@@ -1,5 +1,5 @@
 # ARIbrain
-All-Resolution Inference (ARI) for brain imaging
+All-Resolution Inference (ARI) for brain imaging is an R-package to estimate True Discovery Proportions (TDP) for brain imaging analysis derived clusters of functional MRI activation. The TDP gives the lower-bound (with a certain confidence, usually 95%) of the number of truly active voxels within each cluster.
 
 # Introduction
 `ARIbrain` is the R-package for All-Resolution Inference (ARI) in neuroscience. It allows researchers to estimate the True Discovery Proportion (TDP) of any cluster in a statistical map derived from a (functional) MRI experiment. Statistical maps can be derived using your favorite fMRI analysis package (e.g. SPM, FSL, AFNI). It is convenient for the output to be in NIfti format, as this can be read in by the package. Alternatively you could use an R array as input as well (as the nifti files will be converted to an array internally). 
