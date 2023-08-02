@@ -99,7 +99,7 @@ The output also includes `cl0` which is a 'null' cluster containing all in-mask 
 The following paragraphs contain additional ways to define clusters.
 
 ## FSL command-line add-on
-You can also append your FSL cluster analysis with TDPs. For this go the cope directory of interest in your multilevel gfeat analysis in the terminal using cd 'gfeatdir/copedir/', where 'gfeatdir/copedir/' is the cope directory of your multilevel analysis. Also download the get_tdp.R file [https://github.com/wdweeda/ohbm2023_edu_course/blob/main/practicals/aribrain/get_tdp.R] (for example in the 'download' directory. The command line has the following input
+You can also append your FSL cluster analysis with TDPs. For this go the cope directory of interest in your multilevel gfeat analysis in the terminal using cd 'gfeatdir/copedir/', where 'gfeatdir/copedir/' is the cope directory of your multilevel analysis. Also download the [get_tdp.R](https://github.com/wdweeda/ohbm2023_edu_course/blob/main/practicals/aribrain/get_tdp.R) file (for example in the 'download' directory. The command line has the following input
 
 ```
 Rscript get_tdp.R --zstat=<filename> --cluster=<filename> [options]
