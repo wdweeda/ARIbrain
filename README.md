@@ -98,89 +98,32 @@ The output also includes `cl0` which is a 'null' cluster containing all in-mask 
 
 The following paragraphs contain additional ways to define clusters.
 
-### Create `cluster.nii.gz` with FSL
+## FSL command-line add-on
+You can also append your FSL cluster analysis with TDPs. For this go the cope directory of interest in your multilevel gfeat analysis in the terminal using cd 'gfeatdir/copedir/', where 'gfeatdir/copedir/' is the cope directory of your multilevel analysis. Also download the get_tdp.R file [https://github.com/wdweeda/ohbm2023_edu_course/blob/main/practicals/aribrain/get_tdp.R] (for example in the 'download' directory. The command line has the following input
 
-You simply need to run on the shell:
+```
+Rscript get_tdp.R --zstat=<filename> --cluster=<filename> [options]
 
-`cluster -z zstat1.nii.gz -t 3.2 -o cluster.nii.gz`
+Compulsory arguments:
+--zstat/tstat   filename of z-statistics file (nifti)
+--cluster       filename of cluster-index file (nifti)
+--df            if tstat is specified, df is also needed
 
-This will create `cluster.nii.gz` that you need.
-
-*hint*: In case it retun an error message like  
-`cluster: error while loading shared libraries: libutils.so: cannot open shared object file: No such file or directory`
-type into the shell (replacing the path with your own path of the file fsl.sh):
-
-`source /etc/fsl/5.0/fsl.sh`
-
-and try again.
-
-Get a complete help for FSL at  
-<https://fsl.fmrib.ox.ac.uk/fsl/fslwiki/Cluster>
-
-### Compute thresholds and clusters on the basis of concentration set (optimal threshold)
-
-```{r}
-library(RNifti)
-library(hommel)
-library(ARIbrain)
-
-Tmap <- RNifti::readNifti(system.file("extdata", "zstat.nii.gz", package="ARIbrain"))
-Pmap <- RNifti::readNifti(system.file("extdata", "pvalue.nii.gz", package="ARIbrain"))
-mask <- RNifti::readNifti(system.file("extdata", "mask.nii.gz", package="ARIbrain"))
-mask <- mask!=0
-
-# compute p-value threshold (thr_p) and z-score threshold (thr_z)
-hom <- hommel::hommel(Pmap[mask])
-thr_p <- hommel::concentration(hom)
-thr_z <- -qnorm(thr_p)
-
-# define clusters
-Tmap[!mask] <- 0
-clstr <- cluster_threshold(Tmap>thr_z)
-table(clstr)
+Optional arguments:
+[method]
+--alpha         nominal alpha level of TDPs (two-sided), default is 0.05
+[output]
+--outfile       optional output file of TDP values (nifti)
+--outtable      optional output table of TDP values (txt)
+--intable       optional input table of clusters (TDPs will be added)
+--inhtml        optional input html cluster file (TDPs will be added)
+[options]
+--verbose       print additional information on TDPs
+--quiet         suppresses almost all output to console
+--help          prints this message
 ```
 
-## ARI examples
-
-### Nifti (nii) inputs
-
-```{r}
-library(ARIbrain)
-
-pvalue_name <- system.file("extdata", "pvalue.nii.gz", package="ARIbrain")
-cluster_name <- system.file("extdata", "cluster_th_3.2.nii.gz", package="ARIbrain")
-zstat_name <- system.file("extdata", "zstat.nii.gz", package="ARIbrain")
-mask_name <- system.file("extdata", "mask.nii.gz", package="ARIbrain")
-
-res_ARI <- ARI(Pmap=pvalue_name, clusters=cluster_name, mask=mask_name, Statmap=zstat_name)
-
-str(res_ARI)
-```
-
-### Array inputs
-
-```{r}
-library(RNifti)
-library(ARIbrain)
-
-Tmap <- RNifti::readNifti(system.file("extdata", "zstat.nii.gz", package="ARIbrain"))
-# compute p-values from test statistic (refering to Normal distribution, right-side alternative)
-Pmap <- pnorm(-Tmap)
-
-# read the mask file
-mask <- RNifti::readNifti(system.file("extdata", "mask.nii.gz", package="ARIbrain"))
-# make sure that mask is a logical map
-mask <- mask!=0
-
-# create clusters using a threshold equal to 3.2
-Tmap[!mask] <- 0
-clstr <- cluster_threshold(Tmap>3.2)
-table(clstr)
-
-res_ARI <- ARI(Pmap, clusters=clstr, mask=mask, Statmap=Tmap)
-
-str(res_ARI)
-```
+The following command will append your cluster.html file and save a text file with TDPs and a nifti file with voxels having the TDP value of the cluster they belong to. In the cope directory run: `Rscript /download/get_tdp.R --zstat=./stats/zstat1.nii.gz --cluster=cluster_mask_zstat1.nii.gz --alpha=0.05 --outtable=tdptable.txt --outfile=tdpclus.nii.gz --inhtml=cluster_zstat1_std.html`
 
 # ARICluster analysis
 
@@ -227,7 +170,50 @@ TDPquery(ari, gamma)
 
 Finding clusters with non-zero TDP threshold `gamma` indicates the presence of some signal in each cluster, however, `gamma` of 40%, 70% and 90% could be characterised as weak, moderate and strong spatial localisation, respectively.
 
-## ARIcluster examples
+# Additional syntax
+## ARI examples
+### Create `cluster.nii.gz` with FSL
+
+You simply need to run on the shell:
+
+`cluster -z zstat1.nii.gz -t 3.2 -o cluster.nii.gz`
+
+This will create `cluster.nii.gz` that you need.
+
+*hint*: In case it retun an error message like  
+`cluster: error while loading shared libraries: libutils.so: cannot open shared object file: No such file or directory`
+type into the shell (replacing the path with your own path of the file fsl.sh):
+
+`source /etc/fsl/5.0/fsl.sh`
+
+and try again.
+
+Get a complete help for FSL at  
+<https://fsl.fmrib.ox.ac.uk/fsl/fslwiki/Cluster>
+
+### Compute thresholds and clusters on the basis of concentration set (optimal threshold)
+
+```{r}
+library(RNifti)
+library(hommel)
+library(ARIbrain)
+
+Tmap <- RNifti::readNifti(system.file("extdata", "zstat.nii.gz", package="ARIbrain"))
+Pmap <- RNifti::readNifti(system.file("extdata", "pvalue.nii.gz", package="ARIbrain"))
+mask <- RNifti::readNifti(system.file("extdata", "mask.nii.gz", package="ARIbrain"))
+mask <- mask!=0
+
+# compute p-value threshold (thr_p) and z-score threshold (thr_z)
+hom <- hommel::hommel(Pmap[mask])
+thr_p <- hommel::concentration(hom)
+thr_z <- -qnorm(thr_p)
+
+# define clusters
+Tmap[!mask] <- 0
+clstr <- cluster_threshold(Tmap>thr_z)
+table(clstr)
+```
+
 
 ### Nifti (nii) inputs
 
@@ -235,18 +221,13 @@ Finding clusters with non-zero TDP threshold `gamma` indicates the presence of s
 library(ARIbrain)
 
 pvalue_name <- system.file("extdata", "pvalue.nii.gz", package="ARIbrain")
+cluster_name <- system.file("extdata", "cluster_th_3.2.nii.gz", package="ARIbrain")
+zstat_name <- system.file("extdata", "zstat.nii.gz", package="ARIbrain")
 mask_name <- system.file("extdata", "mask.nii.gz", package="ARIbrain")
 
-# (1) create an ARIBrainCluster object
-ari <- ARIBrainCluster(Pmap=pvalue_name, mask=mask_name)
+res_ARI <- ARI(Pmap=pvalue_name, clusters=cluster_name, mask=mask_name, Statmap=zstat_name)
 
-# (2) answer queries: find all maximal clusters given a TDP threshold
-res <- TDPquery(ari, gamma=0.7)
-# res@clusterlist   # access cluster list
-# print cluster summary table
-summaryCluster(ari, res, rest=TRUE)
-# write cluster image
-writeCluster(ari, res, file="ari.nii.gz", template=mask_name)
+str(res_ARI)
 ```
 
 ### Array inputs
@@ -261,15 +242,15 @@ Pmap <- pnorm(-Tmap)
 
 # read the mask file
 mask <- RNifti::readNifti(system.file("extdata", "mask.nii.gz", package="ARIbrain"))
+# make sure that mask is a logical map
+mask <- mask!=0
 
-# (1) create an ARIBrainCluster object
-ari <- ARIBrainCluster(Pmap, mask=mask)
+# create clusters using a threshold equal to 3.2
+Tmap[!mask] <- 0
+clstr <- cluster_threshold(Tmap>3.2)
+table(clstr)
 
-# (2) answer queries: find all maximal clusters given a TDP threshold
-res <- TDPquery(ari, gamma=0.7)
-# res@clusterlist   # access cluster list
-# print cluster summary table
-summaryCluster(ari, res, rest=TRUE)
-# write cluster image
-writeCluster(ari, res, file="ari.nii.gz", template=mask)
+res_ARI <- ARI(Pmap, clusters=clstr, mask=mask, Statmap=Tmap)
+
+str(res_ARI)
 ```
