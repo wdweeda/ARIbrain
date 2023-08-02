@@ -126,7 +126,28 @@ Optional arguments:
 --help          prints this message
 ```
 
-The following command will append your cluster.html file and save a text file with TDPs and a nifti file with voxels having the TDP value of the cluster they belong to. In the cope directory run: `Rscript /download/get_tdp.R --zstat=./stats/zstat1.nii.gz --cluster=cluster_mask_zstat1.nii.gz --alpha=0.05 --outtable=tdptable.txt --outfile=tdpclus.nii.gz --inhtml=cluster_zstat1_std.html`
+The following command will append your cluster.html file (with extension _tdp.html) and save a text file with TDPs and a nifti file with voxels having the TDP value of the cluster they belong to. In the cope directory run: `Rscript /download/get_tdp.R --zstat=./stats/zstat1.nii.gz --cluster=cluster_mask_zstat1.nii.gz --alpha=0.05 --outtable=tdptable.txt --outfile=tdpclus.nii.gz --inhtml=cluster_zstat1_std.html`
+
+Ouput will look approximately like this:
+```
+True Discovery Proportions (TDP) using ARIbrain version 1.2.a
+Calculated assuming Simes' inequality with 95% confidence.
+
+ > converted z-stats to 2-sided p-values
+ > writing TDP table
+ > writing cluster nifti with TDP values
+ > adding TDPs to cluster html
+
+<TDP output>
+      Size FalseNull TrueNull ActiveProp dim1 dim2 dim3      Stat
+cl5   9161      7134     2027 0.77873595   15   60   37 10.095283
+cl4   8851      6531     2320 0.73788273   77   58   39 10.245214
+cl3    555        40      515 0.07207207   36   65   41  5.100245
+cl2    380        67      313 0.17631579   69   70   50  5.211789
+cl1    195        53      142 0.27179487   72   61   62  5.915697
+cl0 146612      7048   139564 0.04807246   44   87   29  3.539190
+
+```
 
 # ARICluster analysis
 
