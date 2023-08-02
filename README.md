@@ -65,7 +65,7 @@ Now we need to calculate the p-values (preferably 2-sided) from the z-values. We
 ```
 pvals2 <- pnorm(abs(zdat), lower.tail = F)*2
 ```
-Finally, we can estimate the TDPs for the clusters. Best practice is to also give a brain-mask for the in-brain voxels (else the method will correct over all voxels including the voxels outside the brain).
+Finally, we can estimate the TDPs for the clusters. Best practice is to also give a brain-mask for the in-brain voxels `mask = zdat!=0` (else the method will correct over all voxels including the voxels outside the brain).
 ```
 ari_out <- ARIbrain::ARI(Pmap = pvals2, clusters = clus31, mask=zdat!=0, Statmap = zdat)
 ```
