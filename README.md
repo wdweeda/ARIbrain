@@ -102,21 +102,24 @@ The following paragraphs contain additional ways to define clusters.
 You can also append your FSL cluster analysis with TDPs. For this go the cope directory of interest in your multilevel gfeat analysis in the terminal using cd 'gfeatdir/copedir/', where 'gfeatdir/copedir/' is the cope directory of your multilevel analysis. Also download the [get_tdp.R](https://github.com/wdweeda/ohbm2023_edu_course/blob/main/practicals/aribrain/get_tdp.R) file (for example in the 'download' directory. The command line has the following input
 
 ```
+True Discovery Proportions (TDP) using ARIbrain version 1.2.a
+
+Usage:
 Rscript get_tdp.R --zstat=<filename> --cluster=<filename> [options]
 
 Compulsory arguments:
---zstat/tstat   filename of z-statistics file (nifti)
+--zstat/tstat   filename of t/z-statistics file (nifti)
 --cluster       filename of cluster-index file (nifti)
 --df            if tstat is specified, df is also needed
 
 Optional arguments:
 [method]
---alpha         nominal alpha level of TDPs (two-sided), default is 0.05
+--alpha         nominal alpha level of TDPs, default is 0.05 (%95 confidence)
 [output]
 --outfile       optional output file of TDP values (nifti)
 --outtable      optional output table of TDP values (txt)
---intable       optional input table of clusters (TDPs will be added)
---inhtml        optional input html cluster file (TDPs will be added)
+--intable       optional input table (txt) of clusters (TDPs will be added with _tdp)
+--inhtml        optional input html cluster file (TDPs will be added with _tdp)
 [options]
 --verbose       print additional information on TDPs
 --quiet         suppresses almost all output to console
