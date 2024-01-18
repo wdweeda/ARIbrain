@@ -2,7 +2,7 @@
 % Please edit documentation in R/ARIBrainCluster.R
 \name{ARIBrainCluster}
 \alias{ARIBrainCluster}
-\title{All-resolutions inference (ARI) for cluster thresholding in neuroimaging}
+\title{All-resolutions inference for cluster thresholding in neuroimaging (ARIBrainCluster)}
 \usage{
 ARIBrainCluster(Pmap, mask, conn = 18, alpha = 0.05)
 }

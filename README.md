@@ -9,7 +9,7 @@ ARIbrain can be used in two different 'modes'. Using `ARI`, we show how to compu
 ARIbrain requires R to run and the 'ARIbrain'-package to be installed. For non R-users the easiest way to install R is in combination with Rstudio. You can find the instructions how to install R and RStudio.
 
 ## References
-The original paper introducing ARI can be found here: (https://doi.org/10.1016/j.neuroimage.2018.07.060).
+The original paper introducing ARI can be found here: (https://doi.org/10.1016/j.neuroimage.2018.07.060), and the efficient algorithm used to perform ARICluster analysis can be found here: (https://doi.org/10.48550/arXiv.2206.13587).
 
 ## Installing the 'ARIbrain' package
 
@@ -151,7 +151,7 @@ cl0 146612      7048   139564 0.04807246   44   87   29  3.539190
 
 # ARICluster analysis
 
-Here we show an analysis where clusters are defined by a TDP threshold. Using a sufficiently high TDP threshold leads to achieving better spatial localisation. In contrast to classical cluster inference by providing a fixed cluster-forming threshold (CFT), `ARICluster` uses flexible CFTs, each defind by the TDP threshold, and ensures all derived clusters obtain the TDP meeting or exceeding the pre-specified TDP threshold.
+Here we show an analysis where clusters are defined by a TDP threshold. Using a sufficiently high TDP threshold leads to achieving better spatial localisation. In contrast to classical cluster inference by providing a fixed cluster-forming threshold (CFT), `ARICluster` uses flexible CFTs, each defind by the TDP threshold, and ensures all derived clusters are maximal and obtain the TDP meeting or exceeding the pre-specified TDP threshold.
 
 ## Syntax and parameters
 The syntax of the function includes two steps:
@@ -169,30 +169,46 @@ The syntax of the function includes two steps:
     - `mask`: the map of numerics/logicals (not mandatory, but useful),
     - `conn`: the connectivity criterion: face (8), edge (18) and vertex (26),
     - `alpha`: the significance level.
+    
+    The output of `ARIBrainCluster()` is:
+    
+    - `ARIBrainCluster`: the ARIBrainCluster object.
 
-2. Answer queries given a TDP threshold (type `?ARIbrain::TDPquery` for more details).
+2. Answer queries given a TDP threshold (type `?ARIbrain::TDPQuery` for more details).
 
-    `TDPquery(ARIBrainCluster, gamma)`
+    `TDPQuery(ARIBrainCluster, threshold)`
 
-    The input parameters of `TDPquery()` are:   
+    The input parameters of `TDPQuery()` are:   
 
     - `ARIBrainCluster`: the ARIBrainCluster object,
-    - `gamma`: the TDP threshold.
-
-    Others methodss can be used to summarize the resulting cluster information:
+    - `threshold`: the TDP threshold.
     
-    - `summaryCluster(ARIBrainCluster, TDPquery, rest=FALSE)`
-    - `writeCluster(ARIBrainCluster, TDPquery, file="aribrain.nii.gz", template=NULL)`
-
+    The output of `TDPQuery()` is:
+    
+    - `TDPBrainClusters`: the TDPBrainClusters object.
+    
 The function accepts input map formats of character file names or 3D arrays. Therefore the minimal syntax is
 ```{r, eval=FALSE}
-ari <- ARIBrainCluster(Pmap)
-TDPquery(ari, gamma)
+aricluster <- ARIBrainCluster(Pmap)
+tdpclusters <- TDPQuery(aricluster, threshold)
 ```
+
+Others methods can be used to show the resulting cluster information:
+    
+  - `summary(TDPBrainClusters, rest=FALSE)`  # summarize cluster information & show summary table 
+  - `print(TDPBrainClusters)`                # print summary table
+  - `show(TDPBrainClusters)`                 # display summary table
+  - `length(TDPBrainClusters)`               # compute the number of clusters
+  - `TDPBrainClusters[[i]]`                  # obtain 3D voxel indices of the ith largest cluster
+  - `TDPBrainClusters[1:i]`                  # obtain 3D voxel indices of the top i largest cluster
+    
+and to write out the cluster image
+    
+  - `writeClusters(TDPBrainClusters, file, template)`
 
 ## Select proper TDP threshold
 
-Finding clusters with non-zero TDP threshold `gamma` indicates the presence of some signal in each cluster, however, `gamma` of 40%, 70% and 90% could be characterised as weak, moderate and strong spatial localisation, respectively.
+Finding clusters with non-zero TDP threshold `threshold` indicates the presence of some signal in each cluster, however, `threshold` of 40%, 70% and 90% could be characterized as weak, moderate and strong spatial localisation, respectively.
 
 # Additional syntax
 ## ARI examples

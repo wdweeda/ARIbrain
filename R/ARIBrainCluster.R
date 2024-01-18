@@ -20,7 +20,7 @@ setClass("ARIBrainCluster",
 )
 
 
-#' @title All-resolutions inference (ARI) for cluster thresholding in neuroimaging
+#' @title All-resolutions inference for cluster thresholding in neuroimaging (ARIBrainCluster)
 #' @name ARIBrainCluster
 #' @aliases ARIBrainCluster
 #' @description \code{ARIBrainCluster} is specially designed for brain imaging data analysis.
@@ -87,7 +87,7 @@ ARIBrainCluster <- function(Pmap, mask, conn=18, alpha=0.05) {
   m      <- length(indexp)
   # create 3D whole-brain mask of original orders (starts from 1)
   maskI  <- array(0, dims)
-  maskI[indexp] <- 1:m
+  maskI[indexp] <- seq_len(m)
   maskI  <- as.integer(maskI)
   
   # find the adjacency list
@@ -111,8 +111,11 @@ ARIBrainCluster <- function(Pmap, mask, conn=18, alpha=0.05) {
 
 
 setMethod("TDPQuery", "ARIBrainCluster", function(aricluster, threshold) {
-  tdpclusters <- callNextMethod()
-  return(tdpclusters)
+  # tdpclusters <- callNextMethod()
+  # return(tdpclusters)
+  out <- new("TDPBrainClusters",
+             callNextMethod())
+  return(out)
 })
 
 

@@ -4,7 +4,6 @@
 #' @aliases TDPClusters
 #' @description The class \code{TDPClusters} is the output of a call to \code{\link{TDPQuery}}. It stores the resulting cluster information.
 #' @slot aricluster Object of class "ARICluster-class". Stores the \code{\link{ARICluster-class}} object, usually, a result of a call to \code{\link{ARICluster}}.
-#' @slot dims Object of class "integer". Stores the dimensions of the input p-values.
 #' @slot threshold Object of class "numeric". Stores the TDP threshold.
 #' @slot clusterlist Object of class "list". Stores a list of found clusters, each including indices of nodes within that cluster. Here, the node index starts from 0. Please use \code{aricluster@indexp[tdpclusters@clusterlist[[i]]+1]} to access voxel indices in 3D space for the ith largest cluster.
 #' @return Returns a \code{\link{TDPClusters}} object.
@@ -27,7 +26,7 @@ setClass("TDPClusters",
 #' @description \code{summary} method for class \code{\link{TDPClusters}}.
 #' @usage summary(object, ..., rest = FALSE)
 #' @slot object Object of class "TDPClusters". Stores the \code{\link{TDPClusters}} object, usually, a result of a call to \code{\link{TDPQuery}}.
-#' @slot rest Object of class "logical". By default, \code{rest = FALSE} indicates that information on the rest of the brain will not be shown in the summary table.
+#' @slot rest Object of class "logical". By default, \code{rest = FALSE} indicates that information on the rest nodes will not be shown in the summary table.
 #' @details If the output is not assigned, the summary table will be printed on console.
 #' @examples
 #' 
@@ -38,7 +37,7 @@ setClass("TDPClusters",
 #' @return Returns a summary table reporting Size, TDN (lower bound), #TrueNull (upper bound), TDP (lower bound), maximum statistic and the corresponding ID for each found cluster.
 #' @import plyr
 #' @export
-#' 
+#'
 setMethod("summary", "TDPClusters", function(object, ..., rest=FALSE) {
   # compute number of clusters
   n <- length(object@clusterlist)
@@ -98,7 +97,7 @@ setMethod("summary", "TDPClusters", function(object, ..., rest=FALSE) {
 #' @name show.TDPClusters
 #' @aliases show.TDPClusters
 #' @description \code{show} method for class \code{\link{TDPClusters}} or \code{\link{TDPBrainClusters}}.
-#' @slot object Object of class "TDPClusters". Stores the \code{\link{TDPClusters}} or \code{\link{TDPBrainClusters}} object, usually, a result of a call to \code{\link{TDPQuery}}.
+#' @slot object Object of class "TDPClusters" or "TDPBrainClusters". Stores the \code{\link{TDPClusters}} or \code{\link{TDPBrainClusters}} object, usually, a result of a call to \code{\link{TDPQuery}}.
 #' @details The summary table will be printed on console, and information on the rest of the brain will not be shown.
 #' @examples
 #' 
@@ -117,7 +116,7 @@ setMethod("show", "TDPClusters", function(object) print(summary(object)))
 #' @name length.TDPClusters
 #' @aliases length.TDPClusters
 #' @description \code{length} method for class \code{\link{TDPClusters}} or \code{\link{TDPBrainClusters}}.
-#' @slot x Object of class "TDPClusters". Stores the \code{\link{TDPClusters}} or \code{\link{TDPBrainClusters}} object, usually, a result of a call to \code{\link{TDPQuery}}.
+#' @slot x Object of class "TDPClusters" or "TDPBrainClusters". Stores the \code{\link{TDPClusters}} or \code{\link{TDPBrainClusters}} object, usually, a result of a call to \code{\link{TDPQuery}}.
 #' @details Some operations on \code{clusterlist} for class \code{\link{TDPClusters}} or \code{\link{TDPBrainClusters}}.
 #' @examples
 #' 

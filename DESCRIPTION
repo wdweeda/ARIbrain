@@ -1,11 +1,11 @@
 Package: ARIbrain
 Type: Package
 Title: All-Resolutions Inference
-Version: 0.7
-Date: 2022-05-04
+Version: 0.8
+Date: 2024-01-18
 Author: Livio Finos, Jelle Goeman, Wouter Weeda, Jonathan Rosenblatt, Aldo Solari, Xu Chen
-Maintainer: Livio Finos <livio.finos@unipd.it>, Wouter Weeda <w.d.weeda@fsw.leidenuniv.nl>, Xu Chen <X.Chen.MS@lumc.nl>
-Description: It performs All-Resolutions Inference (ARI) on functional Magnetic Resonance Image (fMRI) data. As a main feature, it estimates lower bounds for the proportion of active voxels (true discovery proportion, TDP) in a set of clusters as, for example, given by a cluster-wise analysis. The method is described in Rosenblatt, Finos, Weeda, Solari, Goeman (2018) <doi:10.1016/j.neuroimage.2018.07.060>. Reversely, given a TDP theshold, it can rapidly generate maximal clusters using the adaptive thresholding algorithm.
+Maintainer: Livio Finos <livio.finos@unipd.it>, Wouter Weeda <w.d.weeda@fsw.leidenuniv.nl>, Xu Chen <xc23776@essex.ac.uk>
+Description: It performs All-Resolutions Inference (ARI) on functional Magnetic Resonance Image (fMRI) data. As a main feature, it estimates lower bounds for the proportion of active voxels (true discovery proportion, TDP) in a set of clusters as, for example, given by a cluster-wise analysis. The method is described in Rosenblatt, Finos, Weeda, Solari, Goeman (2018) <doi:10.1016/j.neuroimage.2018.07.060>. Reversely, given a TDP theshold, it can rapidly generate maximal clusters using the adaptive thresholding algorithm, which is described in Chen, Goeman, Krebs, Meijer, Weeda (2023) <https://doi.org/10.48550/arXiv.2206.13587>.
 License: GPL (>= 2)
 Suggests: knitr, rmarkdown
 Imports: fastcluster, hommel, plyr, Rcpp (>= 1.0.7), RNifti
@@ -16,7 +16,7 @@ NeedsCompilation: yes
 Packaged: 2020-12-14 11:27:29 UTC; wouter
 Repository: CRAN
 Date/Publication: 2020-12-14 12:20:02 UTC
-RoxygenNote: 7.1.2.9000
+RoxygenNote: 7.3.0
 Encoding: UTF-8
 Collate: 
     'ARI.R'

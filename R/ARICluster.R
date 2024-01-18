@@ -30,7 +30,7 @@ setClass("ARICluster",
 )
 
 
-#' @title All-resolutions inference (ARI) for cluster thresholding
+#' @title All-resolutions inference for cluster thresholding (ARICluster)
 #' @name ARICluster
 #' @aliases ARICluster
 #' @description Based on ARI, the adaptive thresholding algorithm is employed to answer queries.
@@ -81,7 +81,7 @@ ARICluster <- function(p, adj, alpha=0.05) {
   ordp  <- as.integer(ordp)   # sorted orders (starts from 1)
   # find the sorting ranks for unsorted p-values
   rankp <- integer(m)
-  rankp[ordp] <- 1:m
+  rankp[ordp] <- seq_len(m)
   rankp <- as.integer(rankp)  # sorting ranks (starts from 1)
   
   # find all admissible STCs & compute TDP bounds

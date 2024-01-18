@@ -20,7 +20,7 @@ If the output is not assigned, the summary table will be printed on console.
 \describe{
 \item{\code{object}}{Object of class "TDPClusters". Stores the \code{\link{TDPClusters}} object, usually, a result of a call to \code{\link{TDPQuery}}.}
 
-\item{\code{rest}}{Object of class "logical". By default, \code{rest = FALSE} indicates that information on the rest of the brain will not be shown in the summary table.}
+\item{\code{rest}}{Object of class "logical". By default, \code{rest = FALSE} indicates that information on the rest nodes will not be shown in the summary table.}
 }}
 
 \examples{
