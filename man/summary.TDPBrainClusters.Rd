@@ -6,6 +6,9 @@
 \usage{
 summary(object, ..., rest = FALSE)
 }
+\value{
+Returns a summary table reporting Size, TDN (lower bound), #TrueNull (upper bound), TDP (lower bound), maximum statistic and the corresponding XYZ coordinates for each found cluster.
+}
 \description{
 \code{summary} method for class \code{\link{TDPBrainClusters}}.
 }

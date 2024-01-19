@@ -15,7 +15,7 @@ The summary table will be printed on console, and information on the rest of the
 \section{Slots}{
 
 \describe{
-\item{\code{object}}{Object of class "TDPClusters". Stores the \code{\link{TDPClusters}} or \code{\link{TDPBrainClusters}} object, usually, a result of a call to \code{\link{TDPQuery}}.}
+\item{\code{object}}{Object of class "TDPClusters" or "TDPBrainClusters". Stores the \code{\link{TDPClusters}} or \code{\link{TDPBrainClusters}} object, usually, a result of a call to \code{\link{TDPQuery}}.}
 }}
 
 \examples{

@@ -15,7 +15,7 @@ Some operations on \code{clusterlist} for class \code{\link{TDPClusters}} or \co
 \section{Slots}{
 
 \describe{
-\item{\code{x}}{Object of class "TDPClusters". Stores the \code{\link{TDPClusters}} or \code{\link{TDPBrainClusters}} object, usually, a result of a call to \code{\link{TDPQuery}}.}
+\item{\code{x}}{Object of class "TDPClusters" or "TDPBrainClusters". Stores the \code{\link{TDPClusters}} or \code{\link{TDPBrainClusters}} object, usually, a result of a call to \code{\link{TDPQuery}}.}
 }}
 
 \examples{

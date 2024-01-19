@@ -15,8 +15,6 @@ The class \code{TDPClusters} is the output of a call to \code{\link{TDPQuery}}. 
 \describe{
 \item{\code{aricluster}}{Object of class "ARICluster-class". Stores the \code{\link{ARICluster-class}} object, usually, a result of a call to \code{\link{ARICluster}}.}
 
-\item{\code{dims}}{Object of class "integer". Stores the dimensions of the input p-values.}
-
 \item{\code{threshold}}{Object of class "numeric". Stores the TDP threshold.}
 
 \item{\code{clusterlist}}{Object of class "list". Stores a list of found clusters, each including indices of nodes within that cluster. Here, the node index starts from 0. Please use \code{aricluster@indexp[tdpclusters@clusterlist[[i]]+1]} to access voxel indices in 3D space for the ith largest cluster.}

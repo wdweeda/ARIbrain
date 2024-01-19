@@ -5,7 +5,6 @@
 #' @aliases TDPBrainClusters
 #' @description The class \code{TDPBrainClusters} is the output of a call to \code{\link{TDPQuery}}. It stores the resulting cluster information.
 #' @slot aricluster Object of class "ARIBrainCluster-class". Stores the \code{\link{ARIBrainCluster-class}} object, usually, a result of a call to \code{\link{ARIBrainCluster}}.
-#' @slot dims Object of class "integer". Stores the dimensions of the input p-values.
 #' @slot threshold Object of class "numeric". Stores the TDP threshold.
 #' @slot clusterlist Object of class "list". Stores a list of found clusters, each including indices of nodes within that cluster. Here, the node index starts from 0. Please use \code{aricluster@indexp[tdpclusters@clusterlist[[i]]+1]} to access voxel indices in 3D space for the ith largest cluster.
 #' @return Returns a \code{\link{TDPBrainClusters}} object.
@@ -39,7 +38,9 @@ setClass("TDPBrainClusters",
 #' summary(tdpclusters, rest = TRUE)  # print summary table (with rest)
 #' 
 #' @author Xu Chen, Thijmen Krebs, Wouter Weeda.
-#' 
+#' @return Returns a summary table reporting Size, TDN (lower bound), #TrueNull (upper bound), TDP (lower bound), maximum statistic and the corresponding XYZ coordinates for each found cluster.
+#' @export
+#'
 setMethod("summary", "TDPBrainClusters", function(object, ..., rest=FALSE) {
   sumtable <- callNextMethod()
   

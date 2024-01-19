@@ -2,7 +2,7 @@
 % Please edit documentation in R/ARICluster.R
 \name{ARICluster}
 \alias{ARICluster}
-\title{All-resolutions inference (ARI) for cluster thresholding}
+\title{All-resolutions inference for cluster thresholding (ARICluster)}
 \usage{
 ARICluster(p, adj, alpha = 0.05)
 }
