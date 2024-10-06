@@ -6,6 +6,11 @@
 \usage{
 summary(object, ..., rest = FALSE)
 }
+\arguments{
+\item{object}{Object of class "TDPClusters". Stores the \code{\link{TDPClusters}} object, usually, a result of a call to \code{\link{TDPQuery}} or \code{\link{TDPChange}}.}
+
+\item{rest}{Object of class "logical". By default, \code{rest = FALSE} indicates that information on the rest nodes will not be shown in the summary table.}
+}
 \value{
 Returns a summary table reporting Size, TDN (lower bound), #TrueNull (upper bound), TDP (lower bound), maximum statistic and the corresponding ID for each found cluster.
 }
@@ -15,14 +20,6 @@ Returns a summary table reporting Size, TDN (lower bound), #TrueNull (upper boun
 \details{
 If the output is not assigned, the summary table will be printed on console.
 }
-\section{Slots}{
-
-\describe{
-\item{\code{object}}{Object of class "TDPClusters". Stores the \code{\link{TDPClusters}} object, usually, a result of a call to \code{\link{TDPQuery}}.}
-
-\item{\code{rest}}{Object of class "logical". By default, \code{rest = FALSE} indicates that information on the rest nodes will not be shown in the summary table.}
-}}
-
 \examples{
 
 table <- summary(tdpclusters)      # get summary table (without rest)

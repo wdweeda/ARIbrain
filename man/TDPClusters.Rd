@@ -8,7 +8,7 @@
 Returns a \code{\link{TDPClusters}} object.
 }
 \description{
-The class \code{TDPClusters} is the output of a call to \code{\link{TDPQuery}}. It stores the resulting cluster information.
+The class \code{TDPClusters} is the output of a call to \code{\link{TDPQuery}} or \code{\link{TDPChange}}. It stores the resulting cluster information.
 }
 \section{Slots}{
 
@@ -17,7 +17,7 @@ The class \code{TDPClusters} is the output of a call to \code{\link{TDPQuery}}. 
 
 \item{\code{threshold}}{Object of class "numeric". Stores the TDP threshold.}
 
-\item{\code{clusterlist}}{Object of class "list". Stores a list of found clusters, each including indices of nodes within that cluster. Here, the node index starts from 0. Please use \code{aricluster@indexp[tdpclusters@clusterlist[[i]]+1]} to access voxel indices in 3D space for the ith largest cluster.}
+\item{\code{clusterlist}}{Object of class "list". Stores a list of found clusters, each including indices of nodes within that cluster. Here, the node index starts from 0. Please use \code{tdpclusters@clusterlist[[i]]+1} to access node indices for the ith largest cluster.}
 }}
 
 \author{

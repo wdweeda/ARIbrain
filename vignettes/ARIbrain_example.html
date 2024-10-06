@@ -49,7 +49,7 @@ overflow: visible;
 </style>
 <style type="text/css" data-origin="pandoc">
 pre > code.sourceCode { white-space: pre; position: relative; }
-pre > code.sourceCode > span { display: inline-block; line-height: 1.25; }
+pre > code.sourceCode > span { line-height: 1.25; }
 pre > code.sourceCode > span:empty { height: 1.2em; }
 .sourceCode { overflow: visible; }
 code.sourceCode > span { color: inherit; text-decoration: inherit; }
@@ -584,14 +584,14 @@ TDP meeting or exceeding the pre-specified TDP threshold.</p>
 <h2>Syntax and parameters</h2>
 <p>The syntax of the function includes two steps:</p>
 <ol style="list-style-type: decimal">
-<li><p>Create an ARIBrainCluster object (type
+<li><p>Create an ARIBrainCluster-class object (type
 <code>?ARIbrain::ARIBrainCluster</code> for more details).</p>
 <p><code>ARIBrainCluster(Pmap, mask, conn=18, alpha=0.05)</code></p>
-<p>The main input parameter of <code>ARIBrainCluster()</code> is:</p>
+<p>The main input argument of <code>ARIBrainCluster()</code> is:</p>
 <ul>
 <li><code>Pmap</code>: the map of p-values.</li>
 </ul>
-<p>Others optional maps (parameters) are:</p>
+<p>Other optional arguments are:</p>
 <ul>
 <li><code>mask</code>: the map of numerics/logicals (not mandatory, but
 useful),</li>
@@ -601,17 +601,35 @@ and vertex (26),</li>
 </ul>
 <p>The output of <code>ARIBrainCluster()</code> is:</p>
 <ul>
-<li><code>ARIBrainCluster</code>: the ARIBrainCluster object.</li>
+<li><code>ARIBrainCluster-class</code>: the ARIBrainCluster-class
+object.</li>
 </ul></li>
 <li><p>Answer queries given a TDP threshold (type
 <code>?ARIbrain::TDPQuery</code> for more details).</p>
-<p><code>TDPQuery(ARIBrainCluster, threshold)</code></p>
-<p>The input parameters of <code>TDPQuery()</code> are:</p>
+<p><code>TDPQuery(ARIBrainCluster-class, threshold)</code></p>
+<p>The input arguments of <code>TDPQuery()</code> are:</p>
 <ul>
-<li><code>ARIBrainCluster</code>: the ARIBrainCluster object,</li>
+<li><code>ARIBrainCluster-class</code>: the ARIBrainCluster-class
+object,</li>
 <li><code>threshold</code>: the TDP threshold.</li>
 </ul>
 <p>The output of <code>TDPQuery()</code> is:</p>
+<ul>
+<li><code>TDPBrainClusters</code>: the TDPBrainClusters object.</li>
+</ul></li>
+<li><p>Change the size of a chosen cluster by increasing or decreasing
+its TDP (type <code>?ARIbrain::TDPChange</code> for more details).</p>
+<p><code>TDPChange(TDPBrainClusters, x, tdpchg)</code></p>
+<p>The main input arguments of <code>TDPChange()</code> are:</p>
+<ul>
+<li><code>TDPBrainClusters</code>: the TDPBrainClusters object.</li>
+<li><code>x</code>: index of the chosen cluster.</li>
+</ul>
+<p>Another optional argument is:</p>
+<ul>
+<li><code>tdpchg</code>: a sufficient TDP change.</li>
+</ul>
+<p>The output of <code>TDPChange()</code> is:</p>
 <ul>
 <li><code>TDPBrainClusters</code>: the TDPBrainClusters object.</li>
 </ul></li>
@@ -619,7 +637,8 @@ and vertex (26),</li>
 <p>The function accepts input map formats of character file names or 3D
 arrays. Therefore the minimal syntax is</p>
 <div class="sourceCode" id="cb7"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb7-1"><a href="#cb7-1" tabindex="-1"></a>aricluster <span class="ot">&lt;-</span> <span class="fu">ARIBrainCluster</span>(Pmap)</span>
-<span id="cb7-2"><a href="#cb7-2" tabindex="-1"></a>tdpclusters <span class="ot">&lt;-</span> <span class="fu">TDPQuery</span>(aricluster, threshold)</span></code></pre></div>
+<span id="cb7-2"><a href="#cb7-2" tabindex="-1"></a>tdpclusters <span class="ot">&lt;-</span> <span class="fu">TDPQuery</span>(aricluster, threshold)</span>
+<span id="cb7-3"><a href="#cb7-3" tabindex="-1"></a>tdpchanges <span class="ot">&lt;-</span> <span class="fu">TDPChange</span>(tdpclusters, <span class="at">x=</span><span class="dv">1</span>)</span></code></pre></div>
 <p>Others methods can be used to show the resulting cluster
 information:</p>
 <ul>

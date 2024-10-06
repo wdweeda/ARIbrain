@@ -383,10 +383,10 @@ Rcpp::IntegerVector findDiscoveries(Rcpp::IntegerVector   &idx,         // indic
                                     int                   m)            // size of the problem
 {
   // calculate categories for the p-values
-  std::vector<int> cats;
+  std::vector<int> cats(k);
   for (int i=0; i<k; i++)
   {
-    cats.push_back(getCategory(allp[idx[i]-1], simesfactor, alpha, m));
+    cats[i] = getCategory(allp[idx[i]-1], simesfactor, alpha, m);
   }
   
   // find the maximum category needed
@@ -403,14 +403,13 @@ Rcpp::IntegerVector findDiscoveries(Rcpp::IntegerVector   &idx,         // indic
   maxcat = std::min(maxcat, maxcatI);
   
   // prepare disjoint set data structure
-  std::vector<int> parent;
-  std::vector<int> lowest;
-  std::vector<int> rank;
+  std::vector<int> parent(maxcat+1);
+  std::vector<int> lowest(maxcat+1);
+  std::vector<int> rank(maxcat+1, 0);
   for (int i=0; i <= maxcat; i++)
   {
-    parent.push_back(i);
-    lowest.push_back(i);
-    rank.push_back(0);
+    parent[i] = i;
+    lowest[i] = i;
   }
 
   // The algorithm proper. See pseudocode in paper

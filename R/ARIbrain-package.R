@@ -21,9 +21,16 @@
 #' pvalue_name <- system.file("extdata", "pvalue.nii.gz", package = "ARIbrain")
 #' mask_name <- system.file("extdata", "mask.nii.gz", package = "ARIbrain")
 #'
-#' # create an ARIBrainCluster object
+#' # create an ARIBrainCluster-class object
 #' aricluster <- ARIBrainCluster(Pmap = pvalue_name, mask = mask_name)
+#' 
 #' # answer query: find all maximal clusters given a TDP threshold
 #' tdpclusters <- TDPQuery(aricluster, threshold = 0.7)
+#' summary(tdpclusters)
+#' 
+#' # change query: change the size of chosen cluster based on request
+#' tdpchanges <- TDPChange(tdpclusters, x = 1, tdpchg = 0.01)  # increase TDP bound / decrease cluster size
+#' tdpchanges <- TDPChange(tdpchanges,  x = 1, tdpchg = 0.01)  # further update the chosen cluster
+#' summary(tdpchanges)
 #'
 NULL

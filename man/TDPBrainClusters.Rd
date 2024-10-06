@@ -8,7 +8,7 @@
 Returns a \code{\link{TDPBrainClusters}} object.
 }
 \description{
-The class \code{TDPBrainClusters} is the output of a call to \code{\link{TDPQuery}}. It stores the resulting cluster information.
+The class \code{TDPBrainClusters} is the output of a call to \code{\link{TDPQuery}} or \code{\link{TDPChange}}. It stores the resulting cluster information.
 }
 \section{Slots}{
 

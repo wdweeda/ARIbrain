@@ -3,7 +3,7 @@
 #' @name TDPBrainClusters
 #' @docType class
 #' @aliases TDPBrainClusters
-#' @description The class \code{TDPBrainClusters} is the output of a call to \code{\link{TDPQuery}}. It stores the resulting cluster information.
+#' @description The class \code{TDPBrainClusters} is the output of a call to \code{\link{TDPQuery}} or \code{\link{TDPChange}}. It stores the resulting cluster information.
 #' @slot aricluster Object of class "ARIBrainCluster-class". Stores the \code{\link{ARIBrainCluster-class}} object, usually, a result of a call to \code{\link{ARIBrainCluster}}.
 #' @slot threshold Object of class "numeric". Stores the TDP threshold.
 #' @slot clusterlist Object of class "list". Stores a list of found clusters, each including indices of nodes within that cluster. Here, the node index starts from 0. Please use \code{aricluster@indexp[tdpclusters@clusterlist[[i]]+1]} to access voxel indices in 3D space for the ith largest cluster.
@@ -29,8 +29,8 @@ setClass("TDPBrainClusters",
 #' @aliases summary.TDPBrainClusters
 #' @description \code{summary} method for class \code{\link{TDPBrainClusters}}.
 #' @usage summary(object, ..., rest = FALSE)
-#' @slot object Object of class "TDPBrainClusters". Stores the \code{\link{TDPBrainClusters}} object, usually, a result of a call to \code{\link{TDPQuery}}.
-#' @slot rest Object of class "logical". By default, \code{rest = FALSE} indicates that information on the rest of the brain will not be shown in the summary table.
+#' @param object Object of class "TDPBrainClusters". Stores the \code{\link{TDPBrainClusters}} object, usually, a result of a call to \code{\link{TDPQuery}} or \code{\link{TDPChange}}.
+#' @param rest Object of class "logical". By default, \code{rest = FALSE} indicates that information on the rest of the brain will not be shown in the summary table.
 #' @details If the output is not assigned, the summary table will be printed on console.
 #' @examples
 #' 
@@ -68,4 +68,12 @@ setMethod("[", "TDPBrainClusters", function(x, i, j, ..., drop=TRUE) {
 })
 setMethod("[[", "TDPBrainClusters", function(x, i, j, ...) {
   x@aricluster@indexp[x@clusterlist[[i]]+1]
+})
+
+
+# ---------- NEWLY ADDED: CHANGE CLUSTER SIZE ---------- #
+setMethod("TDPChange", "TDPBrainClusters", function(object, x, tdpchg=0.01) {
+  out <- new("TDPBrainClusters",
+             callNextMethod())
+  return(out)
 })

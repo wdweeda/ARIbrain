@@ -6,18 +6,15 @@
 \usage{
 \S4method{length}{TDPClusters}(x)
 }
+\arguments{
+\item{x}{Object of class "TDPClusters" or "TDPBrainClusters". Stores the \code{\link{TDPClusters}} or \code{\link{TDPBrainClusters}} object, usually, a result of a call to \code{\link{TDPQuery}} or \code{\link{TDPChange}}.}
+}
 \description{
 \code{length} method for class \code{\link{TDPClusters}} or \code{\link{TDPBrainClusters}}.
 }
 \details{
 Some operations on \code{clusterlist} for class \code{\link{TDPClusters}} or \code{\link{TDPBrainClusters}}.
 }
-\section{Slots}{
-
-\describe{
-\item{\code{x}}{Object of class "TDPClusters" or "TDPBrainClusters". Stores the \code{\link{TDPClusters}} or \code{\link{TDPBrainClusters}} object, usually, a result of a call to \code{\link{TDPQuery}}.}
-}}
-
 \examples{
 
 # get number of clusters
