@@ -112,6 +112,24 @@ BEGIN_RCPP
     return rcpp_result_gen;
 END_RCPP
 }
+// changeQuery
+Rcpp::List changeQuery(int ix, double tdpchg, Rcpp::IntegerVector& ADMSTC, Rcpp::IntegerVector& SIZE, Rcpp::IntegerVector& MARK, Rcpp::NumericVector& TDP, Rcpp::List& CHILD, Rcpp::List& ANS);
+RcppExport SEXP _ARIbrain_changeQuery(SEXP ixSEXP, SEXP tdpchgSEXP, SEXP ADMSTCSEXP, SEXP SIZESEXP, SEXP MARKSEXP, SEXP TDPSEXP, SEXP CHILDSEXP, SEXP ANSSEXP) {
+BEGIN_RCPP
+    Rcpp::RObject rcpp_result_gen;
+    Rcpp::RNGScope rcpp_rngScope_gen;
+    Rcpp::traits::input_parameter< int >::type ix(ixSEXP);
+    Rcpp::traits::input_parameter< double >::type tdpchg(tdpchgSEXP);
+    Rcpp::traits::input_parameter< Rcpp::IntegerVector& >::type ADMSTC(ADMSTCSEXP);
+    Rcpp::traits::input_parameter< Rcpp::IntegerVector& >::type SIZE(SIZESEXP);
+    Rcpp::traits::input_parameter< Rcpp::IntegerVector& >::type MARK(MARKSEXP);
+    Rcpp::traits::input_parameter< Rcpp::NumericVector& >::type TDP(TDPSEXP);
+    Rcpp::traits::input_parameter< Rcpp::List& >::type CHILD(CHILDSEXP);
+    Rcpp::traits::input_parameter< Rcpp::List& >::type ANS(ANSSEXP);
+    rcpp_result_gen = Rcpp::wrap(changeQuery(ix, tdpchg, ADMSTC, SIZE, MARK, TDP, CHILD, ANS));
+    return rcpp_result_gen;
+END_RCPP
+}
 // findalpha
 Rcpp::NumericVector findalpha(Rcpp::NumericVector& p, int m, Rcpp::NumericVector& simesfactor, bool simes);
 RcppExport SEXP _ARIbrain_findalpha(SEXP pSEXP, SEXP mSEXP, SEXP simesfactorSEXP, SEXP simesSEXP) {
@@ -220,6 +238,7 @@ static const R_CallMethodDef CallEntries[] = {
     {"_ARIbrain_queryPreparation", (DL_FUNC) &_ARIbrain_queryPreparation, 4},
     {"_ARIbrain_answerQuery", (DL_FUNC) &_ARIbrain_answerQuery, 6},
     {"_ARIbrain_counting_sort", (DL_FUNC) &_ARIbrain_counting_sort, 3},
+    {"_ARIbrain_changeQuery", (DL_FUNC) &_ARIbrain_changeQuery, 8},
     {"_ARIbrain_findalpha", (DL_FUNC) &_ARIbrain_findalpha, 4},
     {"_ARIbrain_findsimesfactor", (DL_FUNC) &_ARIbrain_findsimesfactor, 2},
     {"_ARIbrain_adjustedElementary", (DL_FUNC) &_ARIbrain_adjustedElementary, 4},

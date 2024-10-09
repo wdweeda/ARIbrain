@@ -34,7 +34,7 @@ setClass("ARIBrainCluster",
 #' pvalue_name <- system.file("extdata", "pvalue.nii.gz", package = "ARIbrain")
 #' mask_name <- system.file("extdata", "mask.nii.gz", package = "ARIbrain")
 #' 
-#' # create an ARIBrainCluster object
+#' # create an ARIBrainCluster-class object
 #' aricluster <- ARIBrainCluster(Pmap = pvalue_name, mask = mask_name)
 #' 
 #' @return Returns an \code{\link{ARIBrainCluster-class}} object, based on the base class \code{\link{ARICluster-class}}.
@@ -124,7 +124,7 @@ setMethod("TDPQuery", "ARIBrainCluster", function(aricluster, threshold) {
 #' @aliases writeClusters
 #' @description \code{writeClusters} is defined for \code{\link{TDPBrainClusters}} object to write cluster image in Nifti format.
 #' @usage writeCluster(tdpclusters, file, template, ...)
-#' @param tdpclusters A \code{\link{TDPBrainClusters}} object, usually, a result of a call to \code{\link{TDPQuery}}.
+#' @param tdpclusters A \code{\link{TDPBrainClusters}} object, usually, a result of a call to \code{\link{TDPQuery}} or \code{\link{TDPChange}}.
 #' @param file Character; The file name for outputting cluster image, where a file name that ends in .gz will be gzipped.
 #' @param template A template object for writing Nifti image (please refer to \code{template} of \code{\link[RNifti]{writeNifti}} for more details).
 #' @details \code{writeClusters} works similar to \code{\link[RNifti]{writeNifti}}. All its parameters but the first are relayed to \code{\link[RNifti]{writeNifti}}.

@@ -102,7 +102,7 @@ The following paragraphs contain additional ways to define clusters.
 You can also append your FSL cluster analysis with TDPs. For this go the cope directory of interest in your multilevel gfeat analysis in the terminal using cd 'gfeatdir/copedir/', where 'gfeatdir/copedir/' is the cope directory of your multilevel analysis. Also download the [get_tdp.R](https://github.com/wdweeda/ohbm2023_edu_course/blob/main/practicals/aribrain/get_tdp.R) file (for example in the 'download' directory. The command line has the following input
 
 ```
-True Discovery Proportions (TDP) using ARIbrain version 1.2.a
+True Discovery Proportions (TDP) using ARIbrain version 1.2.b
 
 Usage:
 Rscript get_tdp.R --zstat=<filename> --cluster=<filename> [options]
@@ -128,9 +128,9 @@ Optional arguments:
 
 The following command will append your cluster.html file (with extension _tdp.html) and save a text file with TDPs and a nifti file with voxels having the TDP value of the cluster they belong to. In the cope directory run: `Rscript /download/get_tdp.R --zstat=./stats/zstat1.nii.gz --cluster=cluster_mask_zstat1.nii.gz --alpha=0.05 --outtable=tdptable.txt --outfile=tdpclus.nii.gz --inhtml=cluster_zstat1_std.html`
 
-Ouput will look approximately like this:
+Output will look approximately like this:
 ```
-True Discovery Proportions (TDP) using ARIbrain version 1.2.a
+True Discovery Proportions (TDP) using ARIbrain version 1.2.b
 Calculated assuming Simes' inequality with 95% confidence.
 
  > converted z-stats to 2-sided p-values
@@ -156,15 +156,15 @@ Here we show an analysis where clusters are defined by a TDP threshold. Using a 
 ## Syntax and parameters
 The syntax of the function includes two steps:
 
-1. Create an ARIBrainCluster object (type `?ARIbrain::ARIBrainCluster` for more details).
+1. Create an ARIBrainCluster-class object (type `?ARIbrain::ARIBrainCluster` for more details).
 
     `ARIBrainCluster(Pmap, mask, conn=18, alpha=0.05)`
 
-    The main input parameter of `ARIBrainCluster()` is:   
+    The main input argument of `ARIBrainCluster()` is:   
 
     - `Pmap`: the map of p-values.
 
-    Others optional maps (parameters) are:   
+    Other optional arguments are:   
 
     - `mask`: the map of numerics/logicals (not mandatory, but useful),
     - `conn`: the connectivity criterion: face (8), edge (18) and vertex (26),
@@ -172,18 +172,35 @@ The syntax of the function includes two steps:
     
     The output of `ARIBrainCluster()` is:
     
-    - `ARIBrainCluster`: the ARIBrainCluster object.
+    - `ARIBrainCluster-class`: the ARIBrainCluster-class object.
 
 2. Answer queries given a TDP threshold (type `?ARIbrain::TDPQuery` for more details).
 
-    `TDPQuery(ARIBrainCluster, threshold)`
+    `TDPQuery(ARIBrainCluster-class, threshold)`
 
-    The input parameters of `TDPQuery()` are:   
+    The input arguments of `TDPQuery()` are:   
 
-    - `ARIBrainCluster`: the ARIBrainCluster object,
+    - `ARIBrainCluster-class`: the ARIBrainCluster-class object,
     - `threshold`: the TDP threshold.
     
     The output of `TDPQuery()` is:
+    
+    - `TDPBrainClusters`: the TDPBrainClusters object.
+    
+3. Change the size of a chosen cluster by increasing or decreasing its TDP (type `?ARIbrain::TDPChange` for more details).
+
+    `TDPChange(TDPBrainClusters, x, tdpchg)`
+
+    The main input arguments of `TDPChange()` are:  
+
+    - `TDPBrainClusters`: the TDPBrainClusters object.
+    - `x`: index of the chosen cluster.
+    
+    Another optional argument is:
+    
+    - `tdpchg`: a sufficient TDP change.
+    
+    The output of `TDPChange()` is:
     
     - `TDPBrainClusters`: the TDPBrainClusters object.
     
@@ -191,6 +208,7 @@ The function accepts input map formats of character file names or 3D arrays. The
 ```{r, eval=FALSE}
 aricluster <- ARIBrainCluster(Pmap)
 tdpclusters <- TDPQuery(aricluster, threshold)
+tdpchanges <- TDPChange(tdpclusters, x=1)
 ```
 
 Others methods can be used to show the resulting cluster information:

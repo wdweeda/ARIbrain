@@ -6,18 +6,15 @@
 \usage{
 \S4method{show}{TDPClusters}(object)
 }
+\arguments{
+\item{object}{Object of class "TDPClusters" or "TDPBrainClusters". Stores the \code{\link{TDPClusters}} or \code{\link{TDPBrainClusters}} object, usually, a result of a call to \code{\link{TDPQuery}} or \code{\link{TDPChange}}.}
+}
 \description{
 \code{show} method for class \code{\link{TDPClusters}} or \code{\link{TDPBrainClusters}}.
 }
 \details{
 The summary table will be printed on console, and information on the rest of the brain will not be shown.
 }
-\section{Slots}{
-
-\describe{
-\item{\code{object}}{Object of class "TDPClusters" or "TDPBrainClusters". Stores the \code{\link{TDPClusters}} or \code{\link{TDPBrainClusters}} object, usually, a result of a call to \code{\link{TDPQuery}}.}
-}}
-
 \examples{
 
 # four ways to display summary table (without rest):

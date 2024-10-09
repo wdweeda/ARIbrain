@@ -88,7 +88,7 @@ Rcpp::List findClusters(int                  m,     // number of nodes
             if (RANK[IDS[j]-1] < i+1)  // check if the neighbour has a smaller rank
             {
                 int jrep = Find(IDS[j]-1, PARENT);  // representative of the tree
-                int    w = FORESTROOT[jrep];              // forest root of the tree
+                int    w = FORESTROOT[jrep];        // forest root of the tree
                 
                 if (v != w)
                 {
@@ -124,7 +124,7 @@ Rcpp::List findClusters(int                  m,     // number of nodes
             ROOT.push_back(FORESTROOT[i]);
         }
     }
-
+    
     return Rcpp::List::create(Rcpp::Named("CHILD") = CHILD,
                               Rcpp::Named("ROOT") = Rcpp::IntegerVector(ROOT.begin(), ROOT.end()),
                               Rcpp::Named("SIZE") = SIZE);
@@ -207,7 +207,7 @@ void heavyPathTDP(int                  v,       // start of the heavy path (0:m-
         {
             TDP[v] = -1;  // invalid STCs get TDP of -1
         }
-
+        
         // check if v is a leaf
         if (SIZE[v] == 1) break;
         
@@ -247,7 +247,7 @@ Rcpp::NumericVector forestTDP(int                  m,       // number of all nod
             heavyPathTDP(CHD[j], i, m, h, alpha, simesh, P, SIZE, CHILD, TDP);
         }
     }
-
+    
     return TDP;
 }
 
@@ -303,7 +303,7 @@ Rcpp::IntegerVector queryPreparation(int                  m,      // number of v
     
     // sort ADMSTC in ascending order of TDP using the comparator
     std::sort(ADMSTC.begin(), ADMSTC.end(), compareBy(TDP));
-
+    
     return Rcpp::IntegerVector(ADMSTC.begin(), ADMSTC.end());
 }
 
@@ -353,7 +353,7 @@ Rcpp::List answerQuery(double               gamma,
 {
     if (gamma < 0) gamma = 0;  // constrain TDP threshold gamma to be non-negative
     
-    // initialise output: a list of sorting rank vectors for all clusters
+    // initialise output: a list of sorted order vectors for all clusters
     std::list<Rcpp::IntegerVector> ANS;
     
     int left = findLeft(gamma, ADMSTC, TDP);
@@ -414,4 +414,166 @@ Rcpp::IntegerVector counting_sort(int                  n,          // #{clusters
     }
     
     return SORTED;
+}
+
+
+//-------------------------- NEWLY ADDED: (5) CHANGE CLUSTER SIZE --------------------------//
+
+//// Find the index of a cluster that contains v in cluster list ANS
+//// return -1 if no such cluster exists
+//int findRep(int                  v,
+//            Rcpp::IntegerVector& SIZE,
+//            Rcpp::List&          ANS)
+//{
+//    for (int i = 0; i < ANS.size(); i++)
+//    {
+//        Rcpp::IntegerVector CLUS = ANS[i];
+//        int irep = CLUS[CLUS.size()-1];  // representitive of the cluster
+//        if (irep == v)
+//            return i;
+//        else if (SIZE[irep] > SIZE[v])
+//        {
+//            int  left = 0;
+//            int right = CLUS.size() - 1;
+//            while (left <= right)
+//            {
+//                if (CLUS[left] == v) return i;
+//                left++;
+//                if (CLUS[right] == v) return i;
+//                right--;
+//            }
+//        }
+//    }
+//    
+//    return -1;
+//}
+
+// Find the index of a cluster in a cluster list (with no duplicate elements)
+// return -1 if no such index exists;
+// run linear search & binary search in parallel
+int findIndex(int                  irep,
+              Rcpp::IntegerVector& ADMSTC,
+              Rcpp::NumericVector& TDP)
+{
+    int  left = 0;
+    int right = ADMSTC.size()-1;
+    int   low = left;
+    int  high = right;
+    while (low <= high)
+    {
+        int mid = (low+high)/2;  // (1) binary search part (using integer division)
+        if (TDP[ADMSTC[mid]] > TDP[irep])
+        {
+            high = mid - 1;
+        }
+        else if (TDP[ADMSTC[mid]] < TDP[irep])
+        {
+            low = mid + 1;
+        }
+        else
+        {
+            return mid;
+        }
+        
+        if (ADMSTC[right] == irep) return right;  // (2) linear search part
+        right--;
+        if (ADMSTC[left] == irep) return left;
+        left++;
+    }
+    
+    return -1;
+}
+
+// Change the query, i.e., enlarge or shrink the chosen cluster, which is specified using index ix, based on request
+// return the input cluster if the query cannot be fulfilled
+// [[Rcpp::export]]
+Rcpp::List changeQuery(int                  ix,      // 1-based index of cluster in ANS
+                       double               tdpchg,  // used to specify an expected change in TDP. A positive value indicates increasing the TDP bound or reducing the current cluster size.
+                       Rcpp::IntegerVector& ADMSTC,  // a list of all admissible vertices (sorted on TDP)
+                       Rcpp::IntegerVector& SIZE,    // subtree size for all nodes
+                       Rcpp::IntegerVector& MARK,    // used to mark nodes
+                       Rcpp::NumericVector& TDP,     // all TDP bounds
+                       Rcpp::List&          CHILD,   // a children list for all vertices
+                       Rcpp::List&          ANS)     // a cluster list; normally, the output of calling the function answerQuery()
+{
+    // initialise output: a list of clusters
+    std::list<Rcpp::IntegerVector> CHG;
+    
+    //// find the cluster that contains v (return all clusters if v is not within any clusters)
+    //int idv = findRep(v, SIZE, ANS);
+    //if (idv < 0) return ANS;
+    //Rcpp::IntegerVector CLUS = ANS[idv];
+    
+    // mark all nodes within the cluster
+    Rcpp::IntegerVector CLUS = ANS[ix-1];
+    for (int j = 0; j < CLUS.size(); j++)
+    {
+        MARK[CLUS[j]] = 1;
+    }
+    
+    // find index of cluster representitive in ADMSTC
+    int idxv = findIndex(CLUS[CLUS.size()-1], ADMSTC, TDP);
+    //if (idxv < 0)
+    //{
+    //    CHG.push_back(CLUS);
+    //    return Rcpp::wrap(CHG);
+    //}
+    
+    if (tdpchg < 0)  // increase size (OR decrease TDP) of the cluster
+    {
+        // find cluster that contains CLUS with a sufficient decrease of the TDP
+        for (int i = idxv-1; i >= 0; i--)
+        {
+            if (TDP[ADMSTC[i]] >= 0 && TDP[ADMSTC[i]] - TDP[ADMSTC[idxv]] <= tdpchg && SIZE[ADMSTC[i]] > SIZE[ADMSTC[idxv]])
+            {
+                Rcpp::IntegerVector DESC = descendants(ADMSTC[i], SIZE, CHILD);
+                int  left = 0;
+                int right = DESC.size()-1;
+                while (left <= right)
+                {
+                    if (MARK[DESC[left]] > 0 || MARK[DESC[right]] > 0)
+                    {
+                        CHG.push_back(DESC);
+                        // clear marks back to 0
+                        for(int j = 0; j < CLUS.size(); j++)
+                        {
+                            MARK[CLUS[j]] = 0;
+                        }
+                        return Rcpp::wrap(CHG);
+                    }
+                    left++;
+                    right--;
+                }
+            }
+        }
+    }
+    else  // decrease size (OR increase TDP) of the cluster
+    {
+        for (int i = idxv+1; i < ADMSTC.size(); i++)
+        {
+            if (TDP[ADMSTC[i]] >= 0 && TDP[ADMSTC[i]] - TDP[ADMSTC[idxv]] >= tdpchg && MARK[ADMSTC[i]] == 1)
+            {
+                // append a cluster to CHG
+                Rcpp::IntegerVector DESC = descendants(ADMSTC[i], SIZE, CHILD);
+                CHG.push_back(DESC);
+                // mark the corresponding nodes
+                for (int j = 0; j < DESC.size(); j++)
+                {
+                    MARK[DESC[j]] = 2;
+                }
+            }
+        }
+    }
+    
+    // clear marks back to 0
+    for(int j = 0; j < CLUS.size(); j++)
+    {
+        MARK[CLUS[j]] = 0;
+    }
+    
+    if (CHG.size() == 0)
+    {
+        CHG.push_back(CLUS);
+    }
+    return Rcpp::wrap(CHG);
 }

@@ -22,11 +22,12 @@ Returns a \code{\link{TDPClusters}}or \code{\link{TDPBrainClusters}} object of c
 pvalue_name <- system.file("extdata", "pvalue.nii.gz", package = "ARIbrain")
 mask_name <- system.file("extdata", "mask.nii.gz", package = "ARIbrain")
 
-# (1) create an ARIBrainCluster object
+# (1) create an ARIBrainCluster-class object
 aricluster <- ARIBrainCluster(Pmap = pvalue_name, mask = mask_name)
 
 # (2) answer query: find all maximal clusters given a TDP threshold
 tdpclusters <- TDPQuery(aricluster, threshold = 0.7)
+summary(tdpclusters)
     
 }
 \author{

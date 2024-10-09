@@ -7,7 +7,7 @@
 writeCluster(tdpclusters, file, template, ...)
 }
 \arguments{
-\item{tdpclusters}{A \code{\link{TDPBrainClusters}} object, usually, a result of a call to \code{\link{TDPQuery}}.}
+\item{tdpclusters}{A \code{\link{TDPBrainClusters}} object, usually, a result of a call to \code{\link{TDPQuery}} or \code{\link{TDPChange}}.}
 
 \item{file}{Character; The file name for outputting cluster image, where a file name that ends in .gz will be gzipped.}
 

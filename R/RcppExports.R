@@ -29,6 +29,10 @@ counting_sort <- function(n, maxid, CLSTRSIZE) {
     .Call(`_ARIbrain_counting_sort`, n, maxid, CLSTRSIZE)
 }
 
+changeQuery <- function(ix, tdpchg, ADMSTC, SIZE, MARK, TDP, CHILD, ANS) {
+    .Call(`_ARIbrain_changeQuery`, ix, tdpchg, ADMSTC, SIZE, MARK, TDP, CHILD, ANS)
+}
+
 findalpha <- function(p, m, simesfactor, simes) {
     .Call(`_ARIbrain_findalpha`, p, m, simesfactor, simes)
 }

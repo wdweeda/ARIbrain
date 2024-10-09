@@ -26,7 +26,7 @@ Returns an \code{\link{ARIBrainCluster-class}} object, based on the base class \
 pvalue_name <- system.file("extdata", "pvalue.nii.gz", package = "ARIbrain")
 mask_name <- system.file("extdata", "mask.nii.gz", package = "ARIbrain")
 
-# create an ARIBrainCluster object
+# create an ARIBrainCluster-class object
 aricluster <- ARIBrainCluster(Pmap = pvalue_name, mask = mask_name)
 
 }

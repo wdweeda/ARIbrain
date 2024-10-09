@@ -16,7 +16,7 @@ NeedsCompilation: yes
 Packaged: 2020-12-14 11:27:29 UTC; wouter
 Repository: CRAN
 Date/Publication: 2020-12-14 12:20:02 UTC
-RoxygenNote: 7.3.0
+RoxygenNote: 7.3.2
 Encoding: UTF-8
 Collate: 
     'ARI.R'
