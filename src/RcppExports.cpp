@@ -130,6 +130,17 @@ BEGIN_RCPP
     return rcpp_result_gen;
 END_RCPP
 }
+// findLMS
+Rcpp::IntegerVector findLMS(Rcpp::List& CHILD);
+RcppExport SEXP _ARIbrain_findLMS(SEXP CHILDSEXP) {
+BEGIN_RCPP
+    Rcpp::RObject rcpp_result_gen;
+    Rcpp::RNGScope rcpp_rngScope_gen;
+    Rcpp::traits::input_parameter< Rcpp::List& >::type CHILD(CHILDSEXP);
+    rcpp_result_gen = Rcpp::wrap(findLMS(CHILD));
+    return rcpp_result_gen;
+END_RCPP
+}
 // findalpha
 Rcpp::NumericVector findalpha(Rcpp::NumericVector& p, int m, Rcpp::NumericVector& simesfactor, bool simes);
 RcppExport SEXP _ARIbrain_findalpha(SEXP pSEXP, SEXP mSEXP, SEXP simesfactorSEXP, SEXP simesSEXP) {
@@ -239,6 +250,7 @@ static const R_CallMethodDef CallEntries[] = {
     {"_ARIbrain_answerQuery", (DL_FUNC) &_ARIbrain_answerQuery, 6},
     {"_ARIbrain_counting_sort", (DL_FUNC) &_ARIbrain_counting_sort, 3},
     {"_ARIbrain_changeQuery", (DL_FUNC) &_ARIbrain_changeQuery, 8},
+    {"_ARIbrain_findLMS", (DL_FUNC) &_ARIbrain_findLMS, 1},
     {"_ARIbrain_findalpha", (DL_FUNC) &_ARIbrain_findalpha, 4},
     {"_ARIbrain_findsimesfactor", (DL_FUNC) &_ARIbrain_findsimesfactor, 2},
     {"_ARIbrain_adjustedElementary", (DL_FUNC) &_ARIbrain_adjustedElementary, 4},

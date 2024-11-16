@@ -23,6 +23,7 @@ exportMethods("[[")
 export(ARICluster)
 export(ARIBrainCluster)
 export(TDPQuery)
+export(findLMs)
 export(TDPChange)
 export(writeClusters)
 

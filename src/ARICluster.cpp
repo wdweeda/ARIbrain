@@ -577,3 +577,21 @@ Rcpp::List changeQuery(int                  ix,      // 1-based index of cluster
     }
     return Rcpp::wrap(CHG);
 }
+
+// Find all local minima (or leaves of the constructed forest)
+// [[Rcpp::export]]
+Rcpp::IntegerVector findLMS(Rcpp::List& CHILD)  // a children list for all vertices
+{
+    // initialise output: a vector of local minima
+    std::list<int> LMS;
+    for (int i = 0; i < CHILD.size(); i++)
+    {
+        Rcpp::IntegerVector CHD = CHILD[i];
+        if (CHD.size() == 0)
+        {
+            LMS.push_back(i);
+        }
+    }
+    
+    return Rcpp::IntegerVector(LMS.begin(), LMS.end());
+}
