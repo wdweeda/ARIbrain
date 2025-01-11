@@ -113,12 +113,12 @@ BEGIN_RCPP
 END_RCPP
 }
 // changeQuery
-Rcpp::List changeQuery(int ix, double tdpchg, Rcpp::IntegerVector& ADMSTC, Rcpp::IntegerVector& SIZE, Rcpp::IntegerVector& MARK, Rcpp::NumericVector& TDP, Rcpp::List& CHILD, Rcpp::List& ANS);
-RcppExport SEXP _ARIbrain_changeQuery(SEXP ixSEXP, SEXP tdpchgSEXP, SEXP ADMSTCSEXP, SEXP SIZESEXP, SEXP MARKSEXP, SEXP TDPSEXP, SEXP CHILDSEXP, SEXP ANSSEXP) {
+Rcpp::List changeQuery(int v, double tdpchg, Rcpp::IntegerVector& ADMSTC, Rcpp::IntegerVector& SIZE, Rcpp::IntegerVector& MARK, Rcpp::NumericVector& TDP, Rcpp::List& CHILD, Rcpp::List& ANS);
+RcppExport SEXP _ARIbrain_changeQuery(SEXP vSEXP, SEXP tdpchgSEXP, SEXP ADMSTCSEXP, SEXP SIZESEXP, SEXP MARKSEXP, SEXP TDPSEXP, SEXP CHILDSEXP, SEXP ANSSEXP) {
 BEGIN_RCPP
     Rcpp::RObject rcpp_result_gen;
     Rcpp::RNGScope rcpp_rngScope_gen;
-    Rcpp::traits::input_parameter< int >::type ix(ixSEXP);
+    Rcpp::traits::input_parameter< int >::type v(vSEXP);
     Rcpp::traits::input_parameter< double >::type tdpchg(tdpchgSEXP);
     Rcpp::traits::input_parameter< Rcpp::IntegerVector& >::type ADMSTC(ADMSTCSEXP);
     Rcpp::traits::input_parameter< Rcpp::IntegerVector& >::type SIZE(SIZESEXP);
@@ -126,7 +126,7 @@ BEGIN_RCPP
     Rcpp::traits::input_parameter< Rcpp::NumericVector& >::type TDP(TDPSEXP);
     Rcpp::traits::input_parameter< Rcpp::List& >::type CHILD(CHILDSEXP);
     Rcpp::traits::input_parameter< Rcpp::List& >::type ANS(ANSSEXP);
-    rcpp_result_gen = Rcpp::wrap(changeQuery(ix, tdpchg, ADMSTC, SIZE, MARK, TDP, CHILD, ANS));
+    rcpp_result_gen = Rcpp::wrap(changeQuery(v, tdpchg, ADMSTC, SIZE, MARK, TDP, CHILD, ANS));
     return rcpp_result_gen;
 END_RCPP
 }

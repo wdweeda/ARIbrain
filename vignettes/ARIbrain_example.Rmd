@@ -194,12 +194,12 @@ The syntax of the function includes two steps:
     
 3. Change the size of a chosen cluster by increasing or decreasing its TDP (type `?ARIbrain::TDPChange` for more details).
 
-    `TDPChange(TDPBrainClusters, x, tdpchg)`
+    `TDPChange(TDPBrainClusters, v, tdpchg)`
     
     The main input arguments of `TDPChange()` are:  
 
     - `TDPBrainClusters`: the TDPBrainClusters object.
-    - `x`: index of the chosen cluster.
+    - `v`: index or XYZ coordinates of a node within the chosen cluster.
     
     Another optional argument is:
     
@@ -213,7 +213,7 @@ The function accepts input map formats of character file names or 3D arrays. The
 ```{r, eval=FALSE}
 aricluster <- ARIBrainCluster(Pmap)
 tdpclusters <- TDPQuery(aricluster, threshold)
-tdpchanges <- TDPChange(tdpclusters, x=1)
+tdpchanges <- TDPChange(tdpclusters, v=c(X,Y,Z))
 ```
 
 Others methods can be used to show the resulting cluster information:
@@ -316,4 +316,30 @@ table(clstr)
 res_ARI <- ARI(Pmap, clusters=clstr, mask=mask, Statmap=Tmap)
 
 str(res_ARI)
+```
+
+## ARICluster examples
+
+```{r}
+library(ARIbrain)
+
+Pmap <- RNifti::readNifti(system.file("extdata", "pvalue.nii.gz", package="ARIbrain"))
+mask <- RNifti::readNifti(system.file("extdata", "mask.nii.gz", package="ARIbrain"))
+mask <- mask!=0
+
+# (1) create an ARIBrainCluster-class object
+aricluster <- ARIBrainCluster(Pmap = Pmap, mask = mask)
+
+# (2) answer query: find all maximal clusters given a TDP threshold
+tdpclusters <- TDPQuery(aricluster, threshold = 0.7)
+summary(tdpclusters)
+
+# (3) change query: change the size of chosen cluster based on request
+tdpchanges <- TDPChange(tdpclusters, v = c(17,57,38), tdpchg =  0.01)  # increase TDP bound / decrease cluster size
+summary(tdpchanges)
+tdpchanges <- TDPChange(tdpchanges,  v = c(17,57,38), tdpchg =  0.01)  # further update the chosen cluster
+summary(tdpchanges)
+
+tdpchanges <- TDPChange(tdpchanges,  v = c(17,57,38), tdpchg = -0.01)  # decrease TDP bound / increase cluster size
+summary(tdpchanges)
 ```

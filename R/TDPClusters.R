@@ -150,9 +150,9 @@ setMethod("[[", "TDPClusters", function(x, i, j, ...) x@clusterlist[[i]]+1)
 #' @name TDPChange
 #' @aliases TDPChange
 #' @description \code{TDPChange} is a generic function used to enlarge or shrink a cluster in terms of decreasing or increasing the TDP bound.
-#' @usage TDPChange(object, x, tdpchg=0.01)
+#' @usage TDPChange(object, v, tdpchg=0.01)
 #' @param object Object of class "TDPClusters" or "TDPBrainClusters". Stores a \code{\link{TDPClusters}} or \code{\link{TDPBrainClusters}} object, usually, a result of a call to \code{\link{TDPQuery}} or \code{\link{TDPChange}}.
-#' @param x Object of class "numeric". Stores the index of the chosen cluster in the cluster list saved in \code{object}.
+#' @param v Object of class "numeric". Stores a node index or a vector of 3D coordinates (one-based indexing), which is used to select a cluster in the cluster list saved in \code{object}.
 #' @param tdpchg Object of class "numeric". Stores an expected change in the TDP bound, which should be within the range of \eqn{(-1,0) \cup (0,1)}. A positive value indicates the TDP bound is increased (i.e., cluster size is decreased), and a negative value indicates the TDP bound is decreased (i.e., cluster size is increased). \code{tdpchg = 0.01} by default.
 #' @examples
 #' 
@@ -167,12 +167,11 @@ setMethod("[[", "TDPClusters", function(x, i, j, ...) x@clusterlist[[i]]+1)
 #' summary(tdpclusters)
 #'
 #' # (3) change query: change the size of chosen cluster based on request
-#' tdpchanges <- TDPChange(tdpclusters, x = 1, tdpchg =  0.01)  # increase TDP bound / decrease cluster size
-#' tdpchanges <- TDPChange(tdpchanges,  x = 1, tdpchg =  0.01)  # further update the chosen cluster
+#' tdpchanges <- TDPChange(tdpclusters, v = 1, tdpchg =  0.01)  # increase TDP bound / decrease cluster size
+#' tdpchanges <- TDPChange(tdpchanges,  v = 1, tdpchg =  0.01)  # further update the chosen cluster
 #' summary(tdpchanges)
 #' 
-#' tdpchanges <- TDPChange(tdpclusters, x = 1, tdpchg = -0.01)  # decrease TDP bound / increase cluster size
-#' tdpchanges <- TDPChange(tdpchanges,  x = 1, tdpchg = -0.01)  # further update the chosen cluster
+#' tdpchanges <- TDPChange(tdpchanges,  v = 1, tdpchg = -0.01)  # decrease TDP bound / increase cluster size
 #' summary(tdpchanges)
 #'     
 #' @return Returns a \code{\link{TDPClusters}} or \code{\link{TDPBrainClusters}} object of cluster list.
@@ -180,26 +179,27 @@ setMethod("[[", "TDPClusters", function(x, i, j, ...) x@clusterlist[[i]]+1)
 #' @import 
 #' @export
 #'
-setGeneric("TDPChange", function(object, x, tdpchg) standardGeneric("TDPChange"))
-setMethod("TDPChange", "TDPClusters", function(object, x, tdpchg=0.01) {
+setGeneric("TDPChange", function(object, v, tdpchg) standardGeneric("TDPChange"))
+setMethod("TDPChange", "TDPClusters", function(object, v, tdpchg=0.01) {
   
   # check for inputs
   if (missing(object)) stop("Missing argument 'object'")
-  if (missing(x)) stop("Missing argument 'x'")
+  if (missing(v)) stop("Missing argument 'v'")
   
-  # check for tdpchg
-  maxtdp  <- object@aricluster@tdps[object@aricluster@stcs[length(object@aricluster@stcs)]+1]
-  mintdp  <- object@aricluster@tdps[object@aricluster@stcs[1]+1]
-  currtdp <- object@aricluster@tdps[object@clusterlist[[x]][length(object@clusterlist[[x]])]+1]
-  if (tdpchg<=-1 || tdpchg==0 || tdpchg>=1) stop("'tdpchg' must be non-zero & within (-1,1)")
-  if (mintdp==currtdp || maxtdp==currtdp) stop("No further changes can be attained")
-  if (tdpchg<0 && mintdp-currtdp>tdpchg) 
-    stop("A further TDP reduction of ", abs(tdpchg), " cannot be achieved as min(TDP) = ", mintdp, " and current TDP is ", currtdp)
-  if (tdpchg>0 && maxtdp-currtdp<tdpchg) 
-    stop("A further TDP augmentation of ", tdpchg, " cannot be achieved as max(TDP) = ", maxtdp, " and current TDP is ", currtdp)
+  # # check for tdpchg
+  # maxtdp  <- object@aricluster@tdps[object@aricluster@stcs[length(object@aricluster@stcs)]+1]
+  # mintdp  <- object@aricluster@tdps[object@aricluster@stcs[1]+1]
+  # currtdp <- object@aricluster@tdps[object@clusterlist[[iclus+1]][length(object@clusterlist[[iclus+1]])]+1]
+  # if (tdpchg<=-1 || tdpchg==0 || tdpchg>=1) stop("'tdpchg' must be non-zero & within (-1,1)")
+  # if (mintdp==currtdp || maxtdp==currtdp) stop("No further changes can be attained")
+  # if (tdpchg<0 && mintdp-currtdp>tdpchg) 
+  #   stop("A further TDP reduction of ", abs(tdpchg), " cannot be achieved as min(TDP) = ", mintdp, " and current TDP is ", currtdp)
+  # if (tdpchg>0 && maxtdp-currtdp<tdpchg) 
+  #   stop("A further TDP augmentation of ", tdpchg, " cannot be achieved as max(TDP) = ", maxtdp, " and current TDP is ", currtdp)
   
   # update the chosen cluster
-  clusterlist <- changeQuery(x, tdpchg,
+  clusterlist <- changeQuery(sum(object@aricluster@indexp<=v)-1, 
+                             tdpchg,
                              object@aricluster@stcs,
                              object@aricluster@sizes,
                              object@aricluster@marks,
@@ -226,8 +226,8 @@ setMethod("TDPChange", "TDPClusters", function(object, x, tdpchg=0.01) {
     }
   }
   
-  if (length(clusterlist[[1]])==length(object@clusterlist[[x]]))
-    warning("No further changes can be attained")
+  # if (length(unlist(clusterlist))==length(unlist(object@clusterlist)))
+  #   warning("No further changes can be attained")
   
   out <- new("TDPClusters",
              aricluster = object@aricluster,

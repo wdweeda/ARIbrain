@@ -29,8 +29,8 @@ counting_sort <- function(n, maxid, CLSTRSIZE) {
     .Call(`_ARIbrain_counting_sort`, n, maxid, CLSTRSIZE)
 }
 
-changeQuery <- function(ix, tdpchg, ADMSTC, SIZE, MARK, TDP, CHILD, ANS) {
-    .Call(`_ARIbrain_changeQuery`, ix, tdpchg, ADMSTC, SIZE, MARK, TDP, CHILD, ANS)
+changeQuery <- function(v, tdpchg, ADMSTC, SIZE, MARK, TDP, CHILD, ANS) {
+    .Call(`_ARIbrain_changeQuery`, v, tdpchg, ADMSTC, SIZE, MARK, TDP, CHILD, ANS)
 }
 
 findLMS <- function(CHILD) {

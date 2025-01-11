@@ -4,12 +4,12 @@
 \alias{TDPChange}
 \title{Change the size of a chosen cluster based on the TDP change inquiry}
 \usage{
-TDPChange(object, x, tdpchg=0.01)
+TDPChange(object, v, tdpchg=0.01)
 }
 \arguments{
 \item{object}{Object of class "TDPClusters" or "TDPBrainClusters". Stores a \code{\link{TDPClusters}} or \code{\link{TDPBrainClusters}} object, usually, a result of a call to \code{\link{TDPQuery}} or \code{\link{TDPChange}}.}
 
-\item{x}{Object of class "numeric". Stores the index of the chosen cluster in the cluster list saved in \code{object}.}
+\item{v}{Object of class "numeric". Stores a node index or a vector of 3D coordinates (one-based indexing), which is used to select a cluster in the cluster list saved in \code{object}.}
 
 \item{tdpchg}{Object of class "numeric". Stores an expected change in the TDP bound, which should be within the range of \eqn{(-1,0) \cup (0,1)}. A positive value indicates the TDP bound is increased (i.e., cluster size is decreased), and a negative value indicates the TDP bound is decreased (i.e., cluster size is increased). \code{tdpchg = 0.01} by default.}
 }
@@ -32,12 +32,11 @@ tdpclusters <- TDPQuery(aricluster, threshold = 0.7)
 summary(tdpclusters)
 
 # (3) change query: change the size of chosen cluster based on request
-tdpchanges <- TDPChange(tdpclusters, x = 1, tdpchg =  0.01)  # increase TDP bound / decrease cluster size
-tdpchanges <- TDPChange(tdpchanges,  x = 1, tdpchg =  0.01)  # further update the chosen cluster
+tdpchanges <- TDPChange(tdpclusters, v = 1, tdpchg =  0.01)  # increase TDP bound / decrease cluster size
+tdpchanges <- TDPChange(tdpchanges,  v = 1, tdpchg =  0.01)  # further update the chosen cluster
 summary(tdpchanges)
 
-tdpchanges <- TDPChange(tdpclusters, x = 1, tdpchg = -0.01)  # decrease TDP bound / increase cluster size
-tdpchanges <- TDPChange(tdpchanges,  x = 1, tdpchg = -0.01)  # further update the chosen cluster
+tdpchanges <- TDPChange(tdpchanges,  v = 1, tdpchg = -0.01)  # decrease TDP bound / increase cluster size
 summary(tdpchanges)
     
 }
