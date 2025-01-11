@@ -33,6 +33,10 @@ changeQuery <- function(ix, tdpchg, ADMSTC, SIZE, MARK, TDP, CHILD, ANS) {
     .Call(`_ARIbrain_changeQuery`, ix, tdpchg, ADMSTC, SIZE, MARK, TDP, CHILD, ANS)
 }
 
+findLMS <- function(CHILD) {
+    .Call(`_ARIbrain_findLMS`, CHILD)
+}
+
 findalpha <- function(p, m, simesfactor, simes) {
     .Call(`_ARIbrain_findalpha`, p, m, simesfactor, simes)
 }

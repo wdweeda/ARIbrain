@@ -167,3 +167,22 @@ setMethod("TDPQuery", "ARICluster", function(aricluster, threshold) {
   
   return(out)
 })
+
+
+#' @title Find all local minima
+#' @name findLMs
+#' @aliases findLMs
+#' @description \code{findLMs} is a generic function used to search for all local minima of p-values.
+#' @usage findLMs(aricluster)
+#' @param aricluster An \code{\link{ARICluster-class}} or \code{\link{ARIBrainCluster-class}} object.
+#' @return Returns a vector of all local minima.
+#' @author Xu Chen, Thijmen Krebs, Wouter Weeda.
+#' @import 
+#' @export
+#'
+setGeneric("findLMs", function(aricluster) standardGeneric("findLMs"))
+setMethod("findLMs", "ARICluster", function(aricluster) {
+  # find node indices of all local minima
+  out <- findLMS(aricluster@childs)+1
+  return(out)
+})

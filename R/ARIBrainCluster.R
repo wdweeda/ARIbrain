@@ -119,6 +119,17 @@ setMethod("TDPQuery", "ARIBrainCluster", function(aricluster, threshold) {
 })
 
 
+setMethod("findLMs", "ARIBrainCluster", function(aricluster) {
+  lms <- callNextMethod()
+  # find 3D node indices of all local minima
+  # out <- aricluster@indexp[lms]
+  # find XYZ coordinates of all local minima
+  out <- ids2xyz(as.integer(aricluster@indexp[lms]-1), aricluster@dims)
+  
+  return(out)
+})
+
+
 #' @title Write out cluster image
 #' @name writeClusters
 #' @aliases writeClusters
