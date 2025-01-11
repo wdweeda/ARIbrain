@@ -419,34 +419,34 @@ Rcpp::IntegerVector counting_sort(int                  n,          // #{clusters
 
 //-------------------------- NEWLY ADDED: (5) CHANGE CLUSTER SIZE --------------------------//
 
-//// Find the index of a cluster that contains v in cluster list ANS
-//// return -1 if no such cluster exists
-//int findRep(int                  v,
-//            Rcpp::IntegerVector& SIZE,
-//            Rcpp::List&          ANS)
-//{
-//    for (int i = 0; i < ANS.size(); i++)
-//    {
-//        Rcpp::IntegerVector CLUS = ANS[i];
-//        int irep = CLUS[CLUS.size()-1];  // representitive of the cluster
-//        if (irep == v)
-//            return i;
-//        else if (SIZE[irep] > SIZE[v])
-//        {
-//            int  left = 0;
-//            int right = CLUS.size() - 1;
-//            while (left <= right)
-//            {
-//                if (CLUS[left] == v) return i;
-//                left++;
-//                if (CLUS[right] == v) return i;
-//                right--;
-//            }
-//        }
-//    }
-//    
-//    return -1;
-//}
+// Find the index of the cluster that contains v in cluster list ANS
+// return -1 if no such cluster exists
+int findRep(int                  v,
+            Rcpp::IntegerVector& SIZE,
+            Rcpp::List&          ANS)
+{
+    for (int i = 0; i < ANS.size(); i++)
+    {
+        Rcpp::IntegerVector CLUS = ANS[i];
+        int irep = CLUS[CLUS.size()-1];  // representitive of the cluster
+        if (irep == v)
+            return i;
+        else if (SIZE[irep] > SIZE[v])
+        {
+            int  left = 0;
+            int right = CLUS.size() - 1;
+            while (left <= right)
+            {
+                if (CLUS[left] == v) return i;
+                left++;
+                if (CLUS[right] == v) return i;
+                right--;
+            }
+        }
+    }
+    
+    return -1;
+}
 
 // Find the index of a cluster in a cluster list (with no duplicate elements)
 // return -1 if no such index exists;
@@ -484,10 +484,9 @@ int findIndex(int                  irep,
     return -1;
 }
 
-// Change the query, i.e., enlarge or shrink the chosen cluster, which is specified using index ix, based on request
-// return the input cluster if the query cannot be fulfilled
+// Change the query, i.e., enlarge/shrink the chosen cluster, which is specified using voxel index v, based on request
 // [[Rcpp::export]]
-Rcpp::List changeQuery(int                  ix,      // 1-based index of cluster in ANS
+Rcpp::List changeQuery(int                  v,       // 0-based node index
                        double               tdpchg,  // used to specify an expected change in TDP. A positive value indicates increasing the TDP bound or reducing the current cluster size.
                        Rcpp::IntegerVector& ADMSTC,  // a list of all admissible vertices (sorted on TDP)
                        Rcpp::IntegerVector& SIZE,    // subtree size for all nodes
@@ -499,25 +498,36 @@ Rcpp::List changeQuery(int                  ix,      // 1-based index of cluster
     // initialise output: a list of clusters
     std::list<Rcpp::IntegerVector> CHG;
     
-    //// find the cluster that contains v (return all clusters if v is not within any clusters)
-    //int idv = findRep(v, SIZE, ANS);
-    //if (idv < 0) return ANS;
-    //Rcpp::IntegerVector CLUS = ANS[idv];
+    // check for v
+    if (v < 0) stop("'v' should be non-negative");
+    
+    // find the cluster that contains v
+    int iclus = findRep(v, SIZE, ANS);
+    if (iclus < 0) stop("No cluster can be specified with 'v'");
+    Rcpp::IntegerVector CLUS = ANS[iclus];
+    
+    // find index of cluster representitive in ADMSTC
+    int idxv = findIndex(CLUS[CLUS.size()-1], ADMSTC, TDP);
+    if (idxv < 0) stop("The chosen cluster can not be found in 'ADMSTC'");
+    
+    // check for tdpchg
+    if (tdpchg <= -1 || tdpchg == 0 || tdpchg >= 1) stop("'tdpchg' must be non-zero & within (-1,1)");
+    // check for max(TDP), min(TDP) & curr(TDP)
+    double maxtdp = TDP[ADMSTC[ADMSTC.size()-1]];
+    double mintdp = TDP[ADMSTC[0]];
+    double curtdp = TDP[CLUS[CLUS.size()-1]];
+    if ( (tdpchg < 0 && mintdp == curtdp) || (tdpchg > 0 && maxtdp == curtdp) )
+        stop("No further changes can be attained");
+    if (tdpchg < 0 && mintdp-curtdp > tdpchg)
+        stop("A further TDP reduction of %.5f cannot be achieved as min(TDP) = %.10f and curr(TDP) = %.10f", abs(tdpchg), mintdp, curtdp);
+    if (tdpchg > 0 && maxtdp-curtdp < tdpchg)
+        stop("A further TDP augmentation of %.5f cannot be achieved as max(TDP) = %.10f and curr(TDP) = %.10f", tdpchg, maxtdp, curtdp);
     
     // mark all nodes within the cluster
-    Rcpp::IntegerVector CLUS = ANS[ix-1];
     for (int j = 0; j < CLUS.size(); j++)
     {
         MARK[CLUS[j]] = 1;
     }
-    
-    // find index of cluster representitive in ADMSTC
-    int idxv = findIndex(CLUS[CLUS.size()-1], ADMSTC, TDP);
-    //if (idxv < 0)
-    //{
-    //    CHG.push_back(CLUS);
-    //    return Rcpp::wrap(CHG);
-    //}
     
     if (tdpchg < 0)  // increase size (OR decrease TDP) of the cluster
     {
@@ -527,6 +537,7 @@ Rcpp::List changeQuery(int                  ix,      // 1-based index of cluster
             if (TDP[ADMSTC[i]] >= 0 && TDP[ADMSTC[i]] - TDP[ADMSTC[idxv]] <= tdpchg && SIZE[ADMSTC[i]] > SIZE[ADMSTC[idxv]])
             {
                 Rcpp::IntegerVector DESC = descendants(ADMSTC[i], SIZE, CHILD);
+                
                 int  left = 0;
                 int right = DESC.size()-1;
                 while (left <= right)
@@ -534,11 +545,53 @@ Rcpp::List changeQuery(int                  ix,      // 1-based index of cluster
                     if (MARK[DESC[left]] > 0 || MARK[DESC[right]] > 0)
                     {
                         CHG.push_back(DESC);
+                        
+                        // append remaining clusters to CHG
+                        int dfsz = DESC.size() - CLUS.size();
+                        for (int j = 0; j < ANS.size(); j++)
+                        {
+                            if (j != iclus)
+                            {
+                                Rcpp::IntegerVector CL = ANS[j];
+                                // check if DESC contains CL
+                                if (dfsz >= CL.size())
+                                {
+                                    for(int k = 0; k < CL.size(); k++)
+                                    {
+                                        MARK[CL[k]] = 2;
+                                    }
+                                    
+                                    int l = 0;
+                                    int r = DESC.size()-1;
+                                    while (r-l >= CL.size()-1)
+                                    {
+                                        if (MARK[DESC[l]] == 2 || MARK[DESC[r]] == 2)
+                                        {
+                                            dfsz = dfsz - CL.size();
+                                            break;
+                                        }
+                                        l++;
+                                        r--;
+                                    }
+                                    
+                                    for(int k = 0; k < CL.size(); k++)
+                                    {
+                                        MARK[CL[k]] = 0;
+                                    }
+                                }
+                                else
+                                {
+                                    CHG.push_back(CL);
+                                }
+                            }
+                        }
+                        
                         // clear marks back to 0
                         for(int j = 0; j < CLUS.size(); j++)
                         {
                             MARK[CLUS[j]] = 0;
                         }
+                        
                         return Rcpp::wrap(CHG);
                     }
                     left++;
@@ -563,6 +616,16 @@ Rcpp::List changeQuery(int                  ix,      // 1-based index of cluster
                 }
             }
         }
+        
+        // append remaining clusters to CHG
+        for (int j = 0; j < ANS.size(); j++)
+        {
+            if (j != iclus)
+            {
+                Rcpp::IntegerVector CL = ANS[j];
+                CHG.push_back(CL);
+            }
+        }
     }
     
     // clear marks back to 0
@@ -571,10 +634,6 @@ Rcpp::List changeQuery(int                  ix,      // 1-based index of cluster
         MARK[CLUS[j]] = 0;
     }
     
-    if (CHG.size() == 0)
-    {
-        CHG.push_back(CLUS);
-    }
     return Rcpp::wrap(CHG);
 }
 

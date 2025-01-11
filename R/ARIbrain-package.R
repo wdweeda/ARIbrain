@@ -29,8 +29,11 @@
 #' summary(tdpclusters)
 #' 
 #' # change query: change the size of chosen cluster based on request
-#' tdpchanges <- TDPChange(tdpclusters, x = 1, tdpchg = 0.01)  # increase TDP bound / decrease cluster size
-#' tdpchanges <- TDPChange(tdpchanges,  x = 1, tdpchg = 0.01)  # further update the chosen cluster
+#' tdpchanges <- TDPChange(tdpclusters, v = 1, tdpchg =  0.01)  # increase TDP bound / decrease cluster size
+#' tdpchanges <- TDPChange(tdpchanges,  v = 1, tdpchg =  0.01)  # further update the chosen cluster
+#' summary(tdpchanges)
+#'
+#' tdpchanges <- TDPChange(tdpchanges,  v = 1, tdpchg = -0.01)  # decrease TDP bound / increase cluster size
 #' summary(tdpchanges)
 #'
 NULL

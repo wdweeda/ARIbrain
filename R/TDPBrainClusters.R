@@ -72,7 +72,10 @@ setMethod("[[", "TDPBrainClusters", function(x, i, j, ...) {
 
 
 # ---------- NEWLY ADDED: CHANGE CLUSTER SIZE ---------- #
-setMethod("TDPChange", "TDPBrainClusters", function(object, x, tdpchg=0.01) {
+setMethod("TDPChange", "TDPBrainClusters", function(object, v, tdpchg=0.01) {
+  if (length(v)==2 || length(v)>3) stop("'v' must be an index or XYZ coordinates")
+  if (length(v)==3) v <- (v[3]-1)*object@aricluster@dims[1]*object@aricluster@dims[2] + (v[2]-1)*object@aricluster@dims[1] + v[1]
+  
   out <- new("TDPBrainClusters",
              callNextMethod())
   return(out)

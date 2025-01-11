@@ -619,11 +619,12 @@ object,</li>
 </ul></li>
 <li><p>Change the size of a chosen cluster by increasing or decreasing
 its TDP (type <code>?ARIbrain::TDPChange</code> for more details).</p>
-<p><code>TDPChange(TDPBrainClusters, x, tdpchg)</code></p>
+<p><code>TDPChange(TDPBrainClusters, v, tdpchg)</code></p>
 <p>The main input arguments of <code>TDPChange()</code> are:</p>
 <ul>
 <li><code>TDPBrainClusters</code>: the TDPBrainClusters object.</li>
-<li><code>x</code>: index of the chosen cluster.</li>
+<li><code>v</code>: index or XYZ coordinates of a node within the chosen
+cluster.</li>
 </ul>
 <p>Another optional argument is:</p>
 <ul>
@@ -638,7 +639,7 @@ its TDP (type <code>?ARIbrain::TDPChange</code> for more details).</p>
 arrays. Therefore the minimal syntax is</p>
 <div class="sourceCode" id="cb7"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb7-1"><a href="#cb7-1" tabindex="-1"></a>aricluster <span class="ot">&lt;-</span> <span class="fu">ARIBrainCluster</span>(Pmap)</span>
 <span id="cb7-2"><a href="#cb7-2" tabindex="-1"></a>tdpclusters <span class="ot">&lt;-</span> <span class="fu">TDPQuery</span>(aricluster, threshold)</span>
-<span id="cb7-3"><a href="#cb7-3" tabindex="-1"></a>tdpchanges <span class="ot">&lt;-</span> <span class="fu">TDPChange</span>(tdpclusters, <span class="at">x=</span><span class="dv">1</span>)</span></code></pre></div>
+<span id="cb7-3"><a href="#cb7-3" tabindex="-1"></a>tdpchanges <span class="ot">&lt;-</span> <span class="fu">TDPChange</span>(tdpclusters, <span class="at">v=</span><span class="fu">c</span>(X,Y,Z))</span></code></pre></div>
 <p>Others methods can be used to show the resulting cluster
 information:</p>
 <ul>
@@ -802,8 +803,8 @@ fsl.sh):</p>
 ## cl5       9         0        9 0.00000000   15   36   46 3.762685
 ## cl4       7         0        7 0.00000000   46   53   40 3.504706
 ## cl3       2         0        2 0.00000000   46   44   35 3.330204
-## cl2       1         0        1 0.00000000   19   87   41 3.237725
-## cl1       1         0        1 0.00000000   52   58   46 3.376935
+## cl2       1         0        1 0.00000000   52   58   46 3.376935
+## cl1       1         0        1 0.00000000   19   87   41 3.237725
 ## cl0  133273         0   133273 0.00000000   42   56   43 3.199741</code></pre>
 <div class="sourceCode" id="cb18"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb18-1"><a href="#cb18-1" tabindex="-1"></a><span class="fu">str</span>(res_ARI)</span></code></pre></div>
 <pre><code>##  num [1:19, 1:8] 6907 4607 385 249 168 ...
@@ -811,6 +812,40 @@ fsl.sh):</p>
 ##   ..$ : chr [1:19] &quot;cl18&quot; &quot;cl17&quot; &quot;cl16&quot; &quot;cl15&quot; ...
 ##   ..$ : chr [1:8] &quot;Size&quot; &quot;FalseNull&quot; &quot;TrueNull&quot; &quot;ActiveProp&quot; ...</code></pre>
 </div>
+</div>
+<div id="aricluster-examples" class="section level2">
+<h2>ARICluster examples</h2>
+<div class="sourceCode" id="cb20"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb20-1"><a href="#cb20-1" tabindex="-1"></a><span class="fu">library</span>(ARIbrain)</span>
+<span id="cb20-2"><a href="#cb20-2" tabindex="-1"></a></span>
+<span id="cb20-3"><a href="#cb20-3" tabindex="-1"></a>Pmap <span class="ot">&lt;-</span> RNifti<span class="sc">::</span><span class="fu">readNifti</span>(<span class="fu">system.file</span>(<span class="st">&quot;extdata&quot;</span>, <span class="st">&quot;pvalue.nii.gz&quot;</span>, <span class="at">package=</span><span class="st">&quot;ARIbrain&quot;</span>))</span>
+<span id="cb20-4"><a href="#cb20-4" tabindex="-1"></a>mask <span class="ot">&lt;-</span> RNifti<span class="sc">::</span><span class="fu">readNifti</span>(<span class="fu">system.file</span>(<span class="st">&quot;extdata&quot;</span>, <span class="st">&quot;mask.nii.gz&quot;</span>, <span class="at">package=</span><span class="st">&quot;ARIbrain&quot;</span>))</span>
+<span id="cb20-5"><a href="#cb20-5" tabindex="-1"></a>mask <span class="ot">&lt;-</span> mask<span class="sc">!=</span><span class="dv">0</span></span>
+<span id="cb20-6"><a href="#cb20-6" tabindex="-1"></a></span>
+<span id="cb20-7"><a href="#cb20-7" tabindex="-1"></a><span class="co"># (1) create an ARIBrainCluster-class object</span></span>
+<span id="cb20-8"><a href="#cb20-8" tabindex="-1"></a>aricluster <span class="ot">&lt;-</span> <span class="fu">ARIBrainCluster</span>(<span class="at">Pmap =</span> Pmap, <span class="at">mask =</span> mask)</span></code></pre></div>
+<pre><code>## The 0.95 confidence lower bound for the TDP concerning all nodes is 0.07442827</code></pre>
+<div class="sourceCode" id="cb22"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb22-1"><a href="#cb22-1" tabindex="-1"></a><span class="co"># (2) answer query: find all maximal clusters given a TDP threshold</span></span>
+<span id="cb22-2"><a href="#cb22-2" tabindex="-1"></a>tdpclusters <span class="ot">&lt;-</span> <span class="fu">TDPQuery</span>(aricluster, <span class="at">threshold =</span> <span class="fl">0.7</span>)</span>
+<span id="cb22-3"><a href="#cb22-3" tabindex="-1"></a><span class="fu">summary</span>(tdpclusters)</span></code></pre></div>
+<pre><code>##          Size TDN(lower) #TrueNull(upper) TDP(lower)     Stat  X  Y  Z
+## Cluster2 7398       5179             2219  0.7000541 7.824247 17 57 38
+## Cluster1 4870       3409             1461  0.7000000 7.512624 76 53 39</code></pre>
+<div class="sourceCode" id="cb24"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb24-1"><a href="#cb24-1" tabindex="-1"></a><span class="co"># (3) change query: change the size of chosen cluster based on request</span></span>
+<span id="cb24-2"><a href="#cb24-2" tabindex="-1"></a>tdpchanges <span class="ot">&lt;-</span> <span class="fu">TDPChange</span>(tdpclusters, <span class="at">v =</span> <span class="fu">c</span>(<span class="dv">17</span>,<span class="dv">57</span>,<span class="dv">38</span>), <span class="at">tdpchg =</span>  <span class="fl">0.01</span>)  <span class="co"># increase TDP bound / decrease cluster size</span></span>
+<span id="cb24-3"><a href="#cb24-3" tabindex="-1"></a><span class="fu">summary</span>(tdpchanges)</span></code></pre></div>
+<pre><code>##          Size TDN(lower) #TrueNull(upper) TDP(lower)     Stat  X  Y  Z
+## Cluster2 7293       5179             2114   0.710133 7.824247 17 57 38
+## Cluster1 4870       3409             1461   0.700000 7.512624 76 53 39</code></pre>
+<div class="sourceCode" id="cb26"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb26-1"><a href="#cb26-1" tabindex="-1"></a>tdpchanges <span class="ot">&lt;-</span> <span class="fu">TDPChange</span>(tdpchanges,  <span class="at">v =</span> <span class="fu">c</span>(<span class="dv">17</span>,<span class="dv">57</span>,<span class="dv">38</span>), <span class="at">tdpchg =</span>  <span class="fl">0.01</span>)  <span class="co"># further update the chosen cluster</span></span>
+<span id="cb26-2"><a href="#cb26-2" tabindex="-1"></a><span class="fu">summary</span>(tdpchanges)</span></code></pre></div>
+<pre><code>##          Size TDN(lower) #TrueNull(upper) TDP(lower)     Stat  X  Y  Z
+## Cluster2 7191       5179             2012  0.7202058 7.824247 17 57 38
+## Cluster1 4870       3409             1461  0.7000000 7.512624 76 53 39</code></pre>
+<div class="sourceCode" id="cb28"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb28-1"><a href="#cb28-1" tabindex="-1"></a>tdpchanges <span class="ot">&lt;-</span> <span class="fu">TDPChange</span>(tdpchanges,  <span class="at">v =</span> <span class="fu">c</span>(<span class="dv">17</span>,<span class="dv">57</span>,<span class="dv">38</span>), <span class="at">tdpchg =</span> <span class="sc">-</span><span class="fl">0.01</span>)  <span class="co"># decrease TDP bound / increase cluster size</span></span>
+<span id="cb28-2"><a href="#cb28-2" tabindex="-1"></a><span class="fu">summary</span>(tdpchanges)</span></code></pre></div>
+<pre><code>##          Size TDN(lower) #TrueNull(upper) TDP(lower)     Stat  X  Y  Z
+## Cluster2 7293       5179             2114   0.710133 7.824247 17 57 38
+## Cluster1 4870       3409             1461   0.700000 7.512624 76 53 39</code></pre>
 </div>
 </div>
 

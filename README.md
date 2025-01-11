@@ -1,3 +1,8 @@
+---
+output:
+  rmarkdown::html_vignette: default
+  html_document: default
+---
 # ARIbrain
 All-Resolution Inference (ARI) for brain imaging is an R-package to estimate True Discovery Proportions (TDP) for brain imaging analysis derived clusters of functional MRI activation. The TDP gives the lower-bound (with a certain confidence, usually 95%) of the number of truly active voxels within each cluster.
 
@@ -102,7 +107,7 @@ The following paragraphs contain additional ways to define clusters.
 You can also append your FSL cluster analysis with TDPs. For this go the cope directory of interest in your multilevel gfeat analysis in the terminal using cd 'gfeatdir/copedir/', where 'gfeatdir/copedir/' is the cope directory of your multilevel analysis. Also download the [get_tdp.R](https://github.com/wdweeda/ohbm2023_edu_course/blob/main/practicals/aribrain/get_tdp.R) file (for example in the 'download' directory. The command line has the following input
 
 ```
-True Discovery Proportions (TDP) using ARIbrain version 1.2.b
+True Discovery Proportions (TDP) using ARIbrain version 1.2.a
 
 Usage:
 Rscript get_tdp.R --zstat=<filename> --cluster=<filename> [options]
@@ -128,9 +133,9 @@ Optional arguments:
 
 The following command will append your cluster.html file (with extension _tdp.html) and save a text file with TDPs and a nifti file with voxels having the TDP value of the cluster they belong to. In the cope directory run: `Rscript /download/get_tdp.R --zstat=./stats/zstat1.nii.gz --cluster=cluster_mask_zstat1.nii.gz --alpha=0.05 --outtable=tdptable.txt --outfile=tdpclus.nii.gz --inhtml=cluster_zstat1_std.html`
 
-Output will look approximately like this:
+Ouput will look approximately like this:
 ```
-True Discovery Proportions (TDP) using ARIbrain version 1.2.b
+True Discovery Proportions (TDP) using ARIbrain version 1.2.a
 Calculated assuming Simes' inequality with 95% confidence.
 
  > converted z-stats to 2-sided p-values
@@ -189,12 +194,12 @@ The syntax of the function includes two steps:
     
 3. Change the size of a chosen cluster by increasing or decreasing its TDP (type `?ARIbrain::TDPChange` for more details).
 
-    `TDPChange(TDPBrainClusters, x, tdpchg)`
-
+    `TDPChange(TDPBrainClusters, v, tdpchg)`
+    
     The main input arguments of `TDPChange()` are:  
 
     - `TDPBrainClusters`: the TDPBrainClusters object.
-    - `x`: index of the chosen cluster.
+    - `v`: index or XYZ coordinates of a node within the chosen cluster.
     
     Another optional argument is:
     
@@ -208,7 +213,7 @@ The function accepts input map formats of character file names or 3D arrays. The
 ```{r, eval=FALSE}
 aricluster <- ARIBrainCluster(Pmap)
 tdpclusters <- TDPQuery(aricluster, threshold)
-tdpchanges <- TDPChange(tdpclusters, x=1)
+tdpchanges <- TDPChange(tdpclusters, v=c(X,Y,Z))
 ```
 
 Others methods can be used to show the resulting cluster information:
@@ -311,4 +316,30 @@ table(clstr)
 res_ARI <- ARI(Pmap, clusters=clstr, mask=mask, Statmap=Tmap)
 
 str(res_ARI)
+```
+
+## ARICluster examples
+
+```{r}
+library(ARIbrain)
+
+Pmap <- RNifti::readNifti(system.file("extdata", "pvalue.nii.gz", package="ARIbrain"))
+mask <- RNifti::readNifti(system.file("extdata", "mask.nii.gz", package="ARIbrain"))
+mask <- mask!=0
+
+# (1) create an ARIBrainCluster-class object
+aricluster <- ARIBrainCluster(Pmap = Pmap, mask = mask)
+
+# (2) answer query: find all maximal clusters given a TDP threshold
+tdpclusters <- TDPQuery(aricluster, threshold = 0.7)
+summary(tdpclusters)
+
+# (3) change query: change the size of chosen cluster based on request
+tdpchanges <- TDPChange(tdpclusters, v = c(17,57,38), tdpchg =  0.01)  # increase TDP bound / decrease cluster size
+summary(tdpchanges)
+tdpchanges <- TDPChange(tdpchanges,  v = c(17,57,38), tdpchg =  0.01)  # further update the chosen cluster
+summary(tdpchanges)
+
+tdpchanges <- TDPChange(tdpchanges,  v = c(17,57,38), tdpchg = -0.01)  # decrease TDP bound / increase cluster size
+summary(tdpchanges)
 ```
