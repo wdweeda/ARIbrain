@@ -553,14 +553,15 @@ Rcpp::List changeQuery(int                  v,       // 0-based node index
                             if (j != iclus)
                             {
                                 Rcpp::IntegerVector CL = ANS[j];
-                                // check if DESC contains CL
+                                
                                 if (dfsz >= CL.size())
                                 {
-                                    for(int k = 0; k < CL.size(); k++)
+                                    for (int k = 0; k < CL.size(); k++)
                                     {
                                         MARK[CL[k]] = 2;
                                     }
                                     
+                                    // check if DESC contains CL
                                     int l = 0;
                                     int r = DESC.size()-1;
                                     while (r-l >= CL.size()-1)
@@ -572,6 +573,12 @@ Rcpp::List changeQuery(int                  v,       // 0-based node index
                                         }
                                         l++;
                                         r--;
+                                    }
+                                    
+                                    // append CL to CHG if DESC does not contain CL
+                                    if ( l > DESC.size()-1 || r < 0 || (MARK[DESC[l]] != 2 && MARK[DESC[r]] != 2) )
+                                    {
+                                        CHG.push_back(CL);
                                     }
                                     
                                     for(int k = 0; k < CL.size(); k++)
