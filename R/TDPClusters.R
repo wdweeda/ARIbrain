@@ -167,11 +167,11 @@ setMethod("[[", "TDPClusters", function(x, i, j, ...) x@clusterlist[[i]]+1)
 #' summary(tdpclusters)
 #'
 #' # (3) change query: change the size of chosen cluster based on request
-#' tdpchanges <- TDPChange(tdpclusters, v = 1, tdpchg =  0.01)  # increase TDP bound / decrease cluster size
-#' tdpchanges <- TDPChange(tdpchanges,  v = 1, tdpchg =  0.01)  # further update the chosen cluster
+#' tdpchanges <- TDPChange(tdpclusters, v = c(17,57,38), tdpchg =  0.01)  # increase TDP bound / decrease cluster size
+#' tdpchanges <- TDPChange(tdpchanges,  v = c(17,57,38), tdpchg =  0.01)  # further update the chosen cluster
 #' summary(tdpchanges)
 #' 
-#' tdpchanges <- TDPChange(tdpchanges,  v = 1, tdpchg = -0.01)  # decrease TDP bound / increase cluster size
+#' tdpchanges <- TDPChange(tdpchanges,  v = c(17,57,38), tdpchg = -0.01)  # decrease TDP bound / increase cluster size
 #' summary(tdpchanges)
 #'     
 #' @return Returns a \code{\link{TDPClusters}} or \code{\link{TDPBrainClusters}} object of cluster list.
