@@ -181,6 +181,7 @@ void heavyPathTDP(int                  v,       // start of the heavy path (0:m-
                   int                  par,     // parent of v (-1 indicates no parent)
                   int                  m,       // number of all nodes
                   int                  h,       // h(alpha)
+                  int                  z,       // size of concentration set
                   double               alpha,   // alpha
                   double               simesh,  // simesfactor at h(alpha)
                   Rcpp::NumericVector& P,       // all p-values (unsorted!)
@@ -194,7 +195,7 @@ void heavyPathTDP(int                  v,       // start of the heavy path (0:m-
     //     HP[i]++;
     // }
     Rcpp::IntegerVector HP = descendants(v, SIZE, CHILD) + 1;
-    Rcpp::IntegerVector NUM = findDiscoveries(HP, P, simesh, h, alpha, HP.size(), m);
+    Rcpp::IntegerVector NUM = findDiscoveries(HP, P, simesh, h, alpha, HP.size(), z, m);
     
     while (true)  // walk down the heavy path
     {
@@ -227,16 +228,20 @@ Rcpp::NumericVector forestTDP(int                  m,       // number of all nod
                               double               alpha,   // alpha
                               double               simesh,  // simesfactor at h(alpha)
                               Rcpp::NumericVector& P,       // all p-values (unsorted!)
+                              Rcpp::IntegerVector& ORD,     // sorted orders for p-values
                               Rcpp::IntegerVector& SIZE,    // subtree size for all nodes
                               Rcpp::IntegerVector& ROOT,    // all roots of the forest
                               Rcpp::List&          CHILD)   // a child list for all nodes
 {
     Rcpp::NumericVector TDP(m);
     
+    // compute the size of the concentration set
+    int z = findConcentration(P, ORD, simesh, h, alpha, m);
+    
     // loop through all roots
     for (int i = 0; i < ROOT.size(); i++)
     {
-        heavyPathTDP(ROOT[i], -1, m, h, alpha, simesh, P, SIZE, CHILD, TDP);
+        heavyPathTDP(ROOT[i], -1, m, h, z, alpha, simesh, P, SIZE, CHILD, TDP);
     }
     // loop through all nodes
     for (int i = 0; i < m; i++)
@@ -244,7 +249,7 @@ Rcpp::NumericVector forestTDP(int                  m,       // number of all nod
         Rcpp::IntegerVector CHD = CHILD[i];
         for (int j = 1; j < CHD.size(); j++)
         {
-            heavyPathTDP(CHD[j], i, m, h, alpha, simesh, P, SIZE, CHILD, TDP);
+            heavyPathTDP(CHD[j], i, m, h, z, alpha, simesh, P, SIZE, CHILD, TDP);
         }
     }
     

@@ -13,8 +13,8 @@ findClusters <- function(m, ADJ, ORD, RANK) {
     .Call(`_ARIbrain_findClusters`, m, ADJ, ORD, RANK)
 }
 
-forestTDP <- function(m, h, alpha, simesh, P, SIZE, ROOT, CHILD) {
-    .Call(`_ARIbrain_forestTDP`, m, h, alpha, simesh, P, SIZE, ROOT, CHILD)
+forestTDP <- function(m, h, alpha, simesh, P, ORD, SIZE, ROOT, CHILD) {
+    .Call(`_ARIbrain_forestTDP`, m, h, alpha, simesh, P, ORD, SIZE, ROOT, CHILD)
 }
 
 queryPreparation <- function(m, ROOT, TDP, CHILD) {
@@ -37,31 +37,11 @@ findLMS <- function(CHILD) {
     .Call(`_ARIbrain_findLMS`, CHILD)
 }
 
-findalpha <- function(p, m, simesfactor, simes) {
-    .Call(`_ARIbrain_findalpha`, p, m, simesfactor, simes)
+findConcentration <- function(allp, ORD, simesfactor, h, alpha, m) {
+    .Call(`_ARIbrain_findConcentration`, allp, ORD, simesfactor, h, alpha, m)
 }
 
-findsimesfactor <- function(simes, m) {
-    .Call(`_ARIbrain_findsimesfactor`, simes, m)
-}
-
-adjustedElementary <- function(p, alpha, m, simesfactor) {
-    .Call(`_ARIbrain_adjustedElementary`, p, alpha, m, simesfactor)
-}
-
-adjustedIntersection <- function(pI, alpha, m, simesfactor) {
-    .Call(`_ARIbrain_adjustedIntersection`, pI, alpha, m, simesfactor)
-}
-
-findHalpha <- function(jumpalpha, alpha, m) {
-    .Call(`_ARIbrain_findHalpha`, jumpalpha, alpha, m)
-}
-
-findConcentration <- function(p, simesfactor, h, alpha, m) {
-    .Call(`_ARIbrain_findConcentration`, p, simesfactor, h, alpha, m)
-}
-
-findDiscoveries <- function(idx, allp, simesfactor, h, alpha, k, m) {
-    .Call(`_ARIbrain_findDiscoveries`, idx, allp, simesfactor, h, alpha, k, m)
+findDiscoveries <- function(idx, allp, simesfactor, h, alpha, k, z, m) {
+    .Call(`_ARIbrain_findDiscoveries`, idx, allp, simesfactor, h, alpha, k, z, m)
 }
 

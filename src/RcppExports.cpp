@@ -52,8 +52,8 @@ BEGIN_RCPP
 END_RCPP
 }
 // forestTDP
-Rcpp::NumericVector forestTDP(int m, int h, double alpha, double simesh, Rcpp::NumericVector& P, Rcpp::IntegerVector& SIZE, Rcpp::IntegerVector& ROOT, Rcpp::List& CHILD);
-RcppExport SEXP _ARIbrain_forestTDP(SEXP mSEXP, SEXP hSEXP, SEXP alphaSEXP, SEXP simeshSEXP, SEXP PSEXP, SEXP SIZESEXP, SEXP ROOTSEXP, SEXP CHILDSEXP) {
+Rcpp::NumericVector forestTDP(int m, int h, double alpha, double simesh, Rcpp::NumericVector& P, Rcpp::IntegerVector& ORD, Rcpp::IntegerVector& SIZE, Rcpp::IntegerVector& ROOT, Rcpp::List& CHILD);
+RcppExport SEXP _ARIbrain_forestTDP(SEXP mSEXP, SEXP hSEXP, SEXP alphaSEXP, SEXP simeshSEXP, SEXP PSEXP, SEXP ORDSEXP, SEXP SIZESEXP, SEXP ROOTSEXP, SEXP CHILDSEXP) {
 BEGIN_RCPP
     Rcpp::RObject rcpp_result_gen;
     Rcpp::RNGScope rcpp_rngScope_gen;
@@ -62,10 +62,11 @@ BEGIN_RCPP
     Rcpp::traits::input_parameter< double >::type alpha(alphaSEXP);
     Rcpp::traits::input_parameter< double >::type simesh(simeshSEXP);
     Rcpp::traits::input_parameter< Rcpp::NumericVector& >::type P(PSEXP);
+    Rcpp::traits::input_parameter< Rcpp::IntegerVector& >::type ORD(ORDSEXP);
     Rcpp::traits::input_parameter< Rcpp::IntegerVector& >::type SIZE(SIZESEXP);
     Rcpp::traits::input_parameter< Rcpp::IntegerVector& >::type ROOT(ROOTSEXP);
     Rcpp::traits::input_parameter< Rcpp::List& >::type CHILD(CHILDSEXP);
-    rcpp_result_gen = Rcpp::wrap(forestTDP(m, h, alpha, simesh, P, SIZE, ROOT, CHILD));
+    rcpp_result_gen = Rcpp::wrap(forestTDP(m, h, alpha, simesh, P, ORD, SIZE, ROOT, CHILD));
     return rcpp_result_gen;
 END_RCPP
 }
@@ -141,91 +142,25 @@ BEGIN_RCPP
     return rcpp_result_gen;
 END_RCPP
 }
-// findalpha
-Rcpp::NumericVector findalpha(Rcpp::NumericVector& p, int m, Rcpp::NumericVector& simesfactor, bool simes);
-RcppExport SEXP _ARIbrain_findalpha(SEXP pSEXP, SEXP mSEXP, SEXP simesfactorSEXP, SEXP simesSEXP) {
-BEGIN_RCPP
-    Rcpp::RObject rcpp_result_gen;
-    Rcpp::RNGScope rcpp_rngScope_gen;
-    Rcpp::traits::input_parameter< Rcpp::NumericVector& >::type p(pSEXP);
-    Rcpp::traits::input_parameter< int >::type m(mSEXP);
-    Rcpp::traits::input_parameter< Rcpp::NumericVector& >::type simesfactor(simesfactorSEXP);
-    Rcpp::traits::input_parameter< bool >::type simes(simesSEXP);
-    rcpp_result_gen = Rcpp::wrap(findalpha(p, m, simesfactor, simes));
-    return rcpp_result_gen;
-END_RCPP
-}
-// findsimesfactor
-Rcpp::NumericVector findsimesfactor(bool simes, int m);
-RcppExport SEXP _ARIbrain_findsimesfactor(SEXP simesSEXP, SEXP mSEXP) {
-BEGIN_RCPP
-    Rcpp::RObject rcpp_result_gen;
-    Rcpp::RNGScope rcpp_rngScope_gen;
-    Rcpp::traits::input_parameter< bool >::type simes(simesSEXP);
-    Rcpp::traits::input_parameter< int >::type m(mSEXP);
-    rcpp_result_gen = Rcpp::wrap(findsimesfactor(simes, m));
-    return rcpp_result_gen;
-END_RCPP
-}
-// adjustedElementary
-Rcpp::NumericVector adjustedElementary(Rcpp::NumericVector& p, Rcpp::NumericVector& alpha, int m, Rcpp::NumericVector& simesfactor);
-RcppExport SEXP _ARIbrain_adjustedElementary(SEXP pSEXP, SEXP alphaSEXP, SEXP mSEXP, SEXP simesfactorSEXP) {
-BEGIN_RCPP
-    Rcpp::RObject rcpp_result_gen;
-    Rcpp::RNGScope rcpp_rngScope_gen;
-    Rcpp::traits::input_parameter< Rcpp::NumericVector& >::type p(pSEXP);
-    Rcpp::traits::input_parameter< Rcpp::NumericVector& >::type alpha(alphaSEXP);
-    Rcpp::traits::input_parameter< int >::type m(mSEXP);
-    Rcpp::traits::input_parameter< Rcpp::NumericVector& >::type simesfactor(simesfactorSEXP);
-    rcpp_result_gen = Rcpp::wrap(adjustedElementary(p, alpha, m, simesfactor));
-    return rcpp_result_gen;
-END_RCPP
-}
-// adjustedIntersection
-double adjustedIntersection(double pI, Rcpp::NumericVector& alpha, int m, Rcpp::NumericVector& simesfactor);
-RcppExport SEXP _ARIbrain_adjustedIntersection(SEXP pISEXP, SEXP alphaSEXP, SEXP mSEXP, SEXP simesfactorSEXP) {
-BEGIN_RCPP
-    Rcpp::RObject rcpp_result_gen;
-    Rcpp::RNGScope rcpp_rngScope_gen;
-    Rcpp::traits::input_parameter< double >::type pI(pISEXP);
-    Rcpp::traits::input_parameter< Rcpp::NumericVector& >::type alpha(alphaSEXP);
-    Rcpp::traits::input_parameter< int >::type m(mSEXP);
-    Rcpp::traits::input_parameter< Rcpp::NumericVector& >::type simesfactor(simesfactorSEXP);
-    rcpp_result_gen = Rcpp::wrap(adjustedIntersection(pI, alpha, m, simesfactor));
-    return rcpp_result_gen;
-END_RCPP
-}
-// findHalpha
-int findHalpha(Rcpp::NumericVector& jumpalpha, double alpha, int m);
-RcppExport SEXP _ARIbrain_findHalpha(SEXP jumpalphaSEXP, SEXP alphaSEXP, SEXP mSEXP) {
-BEGIN_RCPP
-    Rcpp::RObject rcpp_result_gen;
-    Rcpp::RNGScope rcpp_rngScope_gen;
-    Rcpp::traits::input_parameter< Rcpp::NumericVector& >::type jumpalpha(jumpalphaSEXP);
-    Rcpp::traits::input_parameter< double >::type alpha(alphaSEXP);
-    Rcpp::traits::input_parameter< int >::type m(mSEXP);
-    rcpp_result_gen = Rcpp::wrap(findHalpha(jumpalpha, alpha, m));
-    return rcpp_result_gen;
-END_RCPP
-}
 // findConcentration
-int findConcentration(Rcpp::NumericVector& p, double simesfactor, int h, double alpha, int m);
-RcppExport SEXP _ARIbrain_findConcentration(SEXP pSEXP, SEXP simesfactorSEXP, SEXP hSEXP, SEXP alphaSEXP, SEXP mSEXP) {
+int findConcentration(Rcpp::NumericVector& allp, Rcpp::IntegerVector& ORD, double simesfactor, int h, double alpha, int m);
+RcppExport SEXP _ARIbrain_findConcentration(SEXP allpSEXP, SEXP ORDSEXP, SEXP simesfactorSEXP, SEXP hSEXP, SEXP alphaSEXP, SEXP mSEXP) {
 BEGIN_RCPP
     Rcpp::RObject rcpp_result_gen;
     Rcpp::RNGScope rcpp_rngScope_gen;
-    Rcpp::traits::input_parameter< Rcpp::NumericVector& >::type p(pSEXP);
+    Rcpp::traits::input_parameter< Rcpp::NumericVector& >::type allp(allpSEXP);
+    Rcpp::traits::input_parameter< Rcpp::IntegerVector& >::type ORD(ORDSEXP);
     Rcpp::traits::input_parameter< double >::type simesfactor(simesfactorSEXP);
     Rcpp::traits::input_parameter< int >::type h(hSEXP);
     Rcpp::traits::input_parameter< double >::type alpha(alphaSEXP);
     Rcpp::traits::input_parameter< int >::type m(mSEXP);
-    rcpp_result_gen = Rcpp::wrap(findConcentration(p, simesfactor, h, alpha, m));
+    rcpp_result_gen = Rcpp::wrap(findConcentration(allp, ORD, simesfactor, h, alpha, m));
     return rcpp_result_gen;
 END_RCPP
 }
 // findDiscoveries
-Rcpp::IntegerVector findDiscoveries(Rcpp::IntegerVector& idx, Rcpp::NumericVector& allp, double simesfactor, int h, double alpha, int k, int m);
-RcppExport SEXP _ARIbrain_findDiscoveries(SEXP idxSEXP, SEXP allpSEXP, SEXP simesfactorSEXP, SEXP hSEXP, SEXP alphaSEXP, SEXP kSEXP, SEXP mSEXP) {
+Rcpp::IntegerVector findDiscoveries(Rcpp::IntegerVector& idx, Rcpp::NumericVector& allp, double simesfactor, int h, double alpha, int k, int z, int m);
+RcppExport SEXP _ARIbrain_findDiscoveries(SEXP idxSEXP, SEXP allpSEXP, SEXP simesfactorSEXP, SEXP hSEXP, SEXP alphaSEXP, SEXP kSEXP, SEXP zSEXP, SEXP mSEXP) {
 BEGIN_RCPP
     Rcpp::RObject rcpp_result_gen;
     Rcpp::RNGScope rcpp_rngScope_gen;
@@ -235,8 +170,9 @@ BEGIN_RCPP
     Rcpp::traits::input_parameter< int >::type h(hSEXP);
     Rcpp::traits::input_parameter< double >::type alpha(alphaSEXP);
     Rcpp::traits::input_parameter< int >::type k(kSEXP);
+    Rcpp::traits::input_parameter< int >::type z(zSEXP);
     Rcpp::traits::input_parameter< int >::type m(mSEXP);
-    rcpp_result_gen = Rcpp::wrap(findDiscoveries(idx, allp, simesfactor, h, alpha, k, m));
+    rcpp_result_gen = Rcpp::wrap(findDiscoveries(idx, allp, simesfactor, h, alpha, k, z, m));
     return rcpp_result_gen;
 END_RCPP
 }
@@ -245,19 +181,14 @@ static const R_CallMethodDef CallEntries[] = {
     {"_ARIbrain_ids2xyz", (DL_FUNC) &_ARIbrain_ids2xyz, 2},
     {"_ARIbrain_findAdjList", (DL_FUNC) &_ARIbrain_findAdjList, 5},
     {"_ARIbrain_findClusters", (DL_FUNC) &_ARIbrain_findClusters, 4},
-    {"_ARIbrain_forestTDP", (DL_FUNC) &_ARIbrain_forestTDP, 8},
+    {"_ARIbrain_forestTDP", (DL_FUNC) &_ARIbrain_forestTDP, 9},
     {"_ARIbrain_queryPreparation", (DL_FUNC) &_ARIbrain_queryPreparation, 4},
     {"_ARIbrain_answerQuery", (DL_FUNC) &_ARIbrain_answerQuery, 6},
     {"_ARIbrain_counting_sort", (DL_FUNC) &_ARIbrain_counting_sort, 3},
     {"_ARIbrain_changeQuery", (DL_FUNC) &_ARIbrain_changeQuery, 8},
     {"_ARIbrain_findLMS", (DL_FUNC) &_ARIbrain_findLMS, 1},
-    {"_ARIbrain_findalpha", (DL_FUNC) &_ARIbrain_findalpha, 4},
-    {"_ARIbrain_findsimesfactor", (DL_FUNC) &_ARIbrain_findsimesfactor, 2},
-    {"_ARIbrain_adjustedElementary", (DL_FUNC) &_ARIbrain_adjustedElementary, 4},
-    {"_ARIbrain_adjustedIntersection", (DL_FUNC) &_ARIbrain_adjustedIntersection, 4},
-    {"_ARIbrain_findHalpha", (DL_FUNC) &_ARIbrain_findHalpha, 3},
-    {"_ARIbrain_findConcentration", (DL_FUNC) &_ARIbrain_findConcentration, 5},
-    {"_ARIbrain_findDiscoveries", (DL_FUNC) &_ARIbrain_findDiscoveries, 7},
+    {"_ARIbrain_findConcentration", (DL_FUNC) &_ARIbrain_findConcentration, 6},
+    {"_ARIbrain_findDiscoveries", (DL_FUNC) &_ARIbrain_findDiscoveries, 8},
     {NULL, NULL, 0}
 };
 
