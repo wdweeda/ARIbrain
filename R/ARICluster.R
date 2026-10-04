@@ -51,6 +51,8 @@ ARICluster <- function(p, adj, alpha=0.05) {
   if (!is.numeric(p)) stop("The p-value vector should be numeric.")
   if (anyNA(p)) stop("Found missing values in p-value vector. Please remove them!")
   if (min(p)<0 || max(p)>1) stop("P-values must be within [0,1].")
+  # check for alpha
+  if (alpha<0 || alpha>1) stop("alpha must be in [0,1].")
   # compute size of the multiple testing problem
   m <- length(p)
   # check for adj
@@ -86,7 +88,8 @@ ARICluster <- function(p, adj, alpha=0.05) {
   
   # find all admissible STCs & compute TDP bounds
   reslist <- findClusters(m, adj, ordp, rankp)
-  tdps    <- forestTDP(m, halpha, alpha, simeshalpha, p, reslist$SIZE, reslist$ROOT, reslist$CHILD)
+  tdps    <- forestTDP(m, halpha, alpha, simeshalpha, p, ordp, 
+                       reslist$SIZE, reslist$ROOT, reslist$CHILD)
   stcs    <- queryPreparation(m, reslist$ROOT, tdps, reslist$CHILD)
   
   # initialize a vector for marking found clusters
